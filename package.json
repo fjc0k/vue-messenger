@@ -1,0 +1,71 @@
+{
+  "name": "vue-messenger",
+  "version": "0.0.0",
+  "description": "Light two-way data binding, with optional listeners and transformations.",
+  "license": "MIT",
+  "main": "dist/vue-messenger.cjs.js",
+  "module": "dist/vue-messenger.es.js",
+  "unpkg": "dist/vue-messenger.min.js",
+  "jsdelivr": "dist/vue-messenger.min.js",
+  "homepage": "https://github.com/fjc0k/vue-messenger",
+  "author": {
+    "name": "fjc0k",
+    "email": "fjc0kb@gmail.com",
+    "url": "https://github.com/fjc0k"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:fjc0k/vue-messenger.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fjc0k/vue-messenger/issues"
+  },
+  "keywords": [
+    "vue",
+    "twoway",
+    "binding",
+    "sync",
+    "model",
+    "messenger",
+    "component"
+  ],
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "jest --coverage",
+    "build": "bdr",
+    "release": "standard-version -a",
+    "postrelease": "git push --follow-tags origin master && npm publish"
+  },
+  "standard-version": {
+    "scripts": {
+      "postbump": "yarn build && git add -A"
+    }
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": "@fir-ui/fir"
+  },
+  "eslintIgnore": [
+    "dist"
+  ],
+  "babel": {
+    "presets": [
+      [
+        "@bdr/bdr"
+      ]
+    ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0-beta.44",
+    "@fir-ui/eslint-config-fir": "^0.3.2",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^22.4.3",
+    "bdr": "^1.3.4",
+    "codecov": "^3.0.0",
+    "eslint": "^4.19.1",
+    "jest": "^22.4.3",
+    "standard-version": "^4.3.0"
+  }
+}
