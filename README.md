@@ -15,7 +15,7 @@ CDN: [jsDelivr](//www.jsdelivr.com/package/npm/vue-messenger) | [UNPKG](//unpkg.
 
 # Example
 
-<a href="https://jsfiddle.net/ifunch/1w7855cd/" target="_blank">Run this example on JSFiddle 🚀</a>
+[Run this example on JSFiddle 🚀](https://jsfiddle.net/ifunch/1w7855cd/)
 
 ```html
 <template>
@@ -48,6 +48,69 @@ CDN: [jsDelivr](//www.jsdelivr.com/package/npm/vue-messenger) | [UNPKG](//unpkg.
         )
       }
     }
+  }
+</script>
+```
+
+# API
+
+## props
+
+### sync
+
+Type: `boolean`
+
+Default: `false`
+
+You can set `{ sync: true }` to enable two-way data binding by the `.sync` modifier, for example:
+
+```html
+<!-- my-dialog.vue -->
+<template>
+  <div
+    class="my-dialog"
+    @click="sendVisible(!localVisible)">
+    <!-- ... -->
+  </div>
+</template>
+
+<script>
+  import VueMessenger from 'vue-messenger'
+
+  export default {
+    name: 'my-dialog',
+
+    mixins: [
+      VueMessenger
+    ],
+
+    props: {
+      visible: {
+        type: Boolean,
+        sync: true
+      }
+    }
+  }
+</script>
+```
+
+```html
+<!-- app.vue -->
+<template>
+  <my-dialog visible.sync="visible" />
+</template>
+
+<script>
+  import MyDialog from './my-dialog.vue'
+
+  export default {
+    name: 'app',
+
+    components: { MyDialog },
+
+    data: () => ({
+      visible: true
+    })
   }
 </script>
 ```
