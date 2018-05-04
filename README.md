@@ -15,7 +15,7 @@ CDN: [jsDelivr](//www.jsdelivr.com/package/npm/vue-messenger) | [UNPKG](//unpkg.
 
 # Example
 
-[Run this example on JSFiddle 🚀](https://jsfiddle.net/ifunch/1w7855cd/)
+<a href="https://jsfiddle.net/ifunch/1w7855cd/" target="_blank">Run this example on JSFiddle 🚀</a>
 
 ```html
 <template>
