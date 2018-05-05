@@ -1,6 +1,6 @@
 {
   "name": "vue-messenger",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A lightweight Vue mixin for communicating between Parent and Child components.",
   "license": "MIT",
   "main": "dist/vue-messenger.cjs.js",
