@@ -1,3 +1,5 @@
+English | [🇨🇳中文](./README_zh-CN.md)
+
 # Vue Messenger
 
 [![Travis](https://travis-ci.org/fjc0k/vue-messenger.svg?branch=master)](https://travis-ci.org/fjc0k/vue-messenger)
@@ -12,7 +14,7 @@ A lightweight Vue mixin for communicating between Parent and Child components.
 - Based on `v-model` and `.sync` of Vue, non-invasively.
 - Lightweight and reliable, minzipped size just `742 B`.
 - Support two-way data binding.
-- Support listening data changes. 
+- Support listening to data changes. 
 - Support data transformations.
 
 # Install

@@ -1,3 +1,5 @@
+🇨🇳中文 | [English](./README.md)
+
 # Vue Messenger
 
 [![Travis](https://travis-ci.org/fjc0k/vue-messenger.svg?branch=master)](https://travis-ci.org/fjc0k/vue-messenger)
