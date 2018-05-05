@@ -1,6 +1,6 @@
 {
   "name": "vue-messenger",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "Light two-way data binding, with optional listeners and transformations.",
   "license": "MIT",
   "main": "dist/vue-messenger.cjs.js",
