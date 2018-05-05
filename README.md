@@ -5,7 +5,15 @@
 [![minified size](https://img.shields.io/badge/minified%20size-1.41%20KB-blue.svg?MIN)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js)
 [![minzipped size](https://img.shields.io/badge/minzipped%20size-742%20B-blue.svg?MZIP)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js)
 
-Light two-way data binding, with optional listeners and transformations.
+A lightweight Vue mixin for communicating between Parent and Child components.
+
+# Features
+
+- Based on `v-model` and `.sync` of Vue, non-invasively.
+- Lightweight and reliable, minzipped size just `742 B`.
+- Support two-way data binding.
+- Support listening data changes. 
+- Support data transformations.
 
 # Install
 
@@ -17,97 +25,172 @@ yarn add vue-messenger
 npm i vue-messenger
 ```
 
-CDN: [jsDelivr](//www.jsdelivr.com/package/npm/vue-messenger) | [UNPKG](//unpkg.com/vue-messenger/) (Avaliable as `window.VueMessenger`)
+CDN: [jsDelivr](//www.jsdelivr.com/package/npm/vue-messenger) | [UNPKG](//unpkg.com/vue-messenger/) (Available as `window.VueMessenger`)
 
-# Example
+# Mixin
 
-[Run this example on JSFiddle 🚀](https://jsfiddle.net/ifunch/1w7855cd/)
+## Component-level Mixin
 
-```html
-<template>
-  <input v-model="localValue" />
-</template>
+You should apply the `VueMessenger` mixin to the components that actually need it, which will reduce unnecessary performance costs.
 
-<script>
-  import VueMessenger from 'vue-messenger'
+```js
+import VueMessenger from 'vue-messenger'
 
-  export default {
-    name: 'my-input',
+export default {
+  mixins: [
+    VueMessenger
+  ],
 
-    mixins: [
-      VueMessenger
-    ],
-
-    props: {
-      value: String
-    },
-
-    methods: {
-      onReceiveValue(value, transformTo) {
-        transformTo(
-          String(value).split(',').join('/')
-        )
-      },
-      onSendValue(value, transformTo) {
-        transformTo(
-          String(value).replace(/\//g, ',')
-        )
-      }
-    }
-  }
-</script>
+  // ...
+}
 ```
 
-# API
+## Global Mixin
 
-## props
+You can also apply the `VueMessenger` mixin globally to all components.
 
-### sync
+```js
+import Vue from 'vue'
+import VueMessenger from 'vue-messenger'
 
-Type: `boolean`
+Vue.mixin(VueMessenger)
 
-Default: `false`
+// ...
+```
 
-You can set `{ sync: true }` to enable two-way data binding by the `.sync` modifier, for example:
 
-```html
-<!-- my-dialog.vue -->
-<template>
-  <div @click="sendVisible(!localVisible)">
-    <!-- ... -->
-  </div>
-</template>
+# Usage
 
-<script>
-  export default {
-    /* ... */
-    props: {
-      visible: {
-        type: Boolean,
-        sync: true
-      }
+## What data should be transferred ?
+
+Before using, `VueMessenger` needs to know what data should be transferred.
+
+By default, `VueMessenger` will transfer the `prop` that used with `v-model`. In general, the `prop` is `value`. You can use the [`model`](https://vuejs.org/v2/api/#model) option of components to change the `prop`.
+
+If you need to transfer other data, you can set `prop.sync` to `true` in the `props` option of components.
+
+As an example:
+
+```js
+// picker.vue
+{
+  props: {
+    value: Array, // transfer by default
+    data: Array, // sync is not set, don't transfer
+    visible: { // sync is true, transfer it
+      type: Boolean,
+      sync: true
+    },
+    detail: { // sync is true, transfer it
+      type: Array,
+      sync: true
+    },
+    cascade: { // sync is false, don't transfer
+      type: Boolean,
+      sync: false
     }
   }
-</script>
+}
 ```
 
 ```html
 <!-- app.vue -->
 <template>
-  <my-dialog visible.sync="visible" />
+  <picker
+    v-model="selectedValue"
+    :data="pickerData"
+    :detail.sync="selectedDetail"
+    :visible.sync="visible"
+  />
 </template>
-
-<script>
-  export default {
-    /* ... */
-    data: () => ({
-      visible: true
-    })
-  }
-</script>
 ```
 
-## data
+## How to access data ?
 
-### localProp
+The transferred data will be localized, so you should access them by using `localProp` inside the components, to avoid directly manipulating the parent's data. e.g.
 
+```html
+<!-- picker.vue -->
+<template>
+  <div v-show="localVisible">
+    <div
+      v-for="(groupData, groupIndex) in data"
+      :key="groupIndex">
+      <div
+        v-for="(item, itemIndex) in groupData"
+        :class="{ selected: localValue[groupIndex] === item.value }"
+        :key="itemIndex">
+        {{ item.label }}
+      </div>
+    </div>
+  </div>
+</template>
+```
+
+## How to send data ?
+
+If the `localProp` values have changed, here are two ways to send new values to parent components:
+
+- Call `sendProp` with new value:
+
+```js
+// picker.vue
+{
+  methods: {
+    handleItemSelect(value) {
+      this.sendValue(value)
+    },
+    handleCancelClick() {
+      this.sendVisible(false)
+    }
+  }
+}
+```
+
+- Assign `localProp` new value:
+
+```js
+// picker.vue
+{
+  methods: {
+    handleItemSelect(value) {
+      this.localValue = value
+    },
+    handleCancelClick() {
+      this.localVisible = false
+    }
+  }
+}
+```
+
+> Actually, `sendProp` is a funtional wrapper of assigning `localProp` new value.
+
+
+## How to listen and transform data ?
+
+You can use `onReceiveProp` and `onSendProp` to listen to the receiving and sending of data, in the meantime you can make some transformations to data. e.g.
+
+```js
+// picker.vue
+{
+  methods: {
+    onReceiveValue(value) {
+      console.log('new value: ' + value)
+    },
+    onSendValue(value, transformTo) {
+      transformTo(
+        value.map(_ => Number(_))
+      )
+    },
+    onReceiveVisible(visible, transformTo, oldVisible, oldVisibleTransformTo) {
+      console.log(`${oldVisible} ==> ${visible}`)
+      oldVisibleTransformTo(
+        Boolean(oldVisible)
+      )
+      transformTo(
+        Boolean(visible)
+      )
+    }
+  }
+}
+```

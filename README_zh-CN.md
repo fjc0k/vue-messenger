@@ -5,7 +5,15 @@
 [![minified size](https://img.shields.io/badge/minified%20size-1.41%20KB-blue.svg?MIN)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js)
 [![minzipped size](https://img.shields.io/badge/minzipped%20size-742%20B-blue.svg?MZIP)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js)
 
-轻量可靠的父子组件双向通信，以及可选的监听和转换。
+一款轻量的父子组件通信插件。
+
+# 特性
+
+- 基于 Vue 的 `v-model` 和 `.sync`，无侵入性。
+- 轻量可靠，压缩 GZIP 后仅 `742 B`。
+- 支持数据双向绑定。
+- 支持监听数据变化。
+- 支持数据转换。
 
 # 安装
 
@@ -23,7 +31,7 @@ CDN：[jsDelivr](//www.jsdelivr.com/package/npm/vue-messenger) | [UNPKG](//unpkg
 
 ## 组件级别混入
 
-你应该只在需要双向通信的组件内混入 `VueMessenger`，以减少不必要的性能消耗。
+你应该只在真正需要的组件内混入 `VueMessenger`，以减少不必要的性能消耗。
 
 ```js
 import VueMessenger from 'vue-messenger'
