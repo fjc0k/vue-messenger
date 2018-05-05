@@ -1,5 +1,5 @@
 /*!
- * vue-messenger v0.2.3
+ * vue-messenger v1.0.0
  * (c) 2018-present fjc0k <fjc0kb@gmail.com> (https://github.com/fjc0k)
  * Released under the MIT License.
  */
