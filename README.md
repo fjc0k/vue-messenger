@@ -12,7 +12,6 @@ A lightweight Vue mixin for communicating between Parent and Child components.
 # Features
 
 - Based on `v-model` and `.sync` of Vue, non-invasively.
-- Lightweight and reliable, minzipped size just `742 B`.
 - Support two-way data binding.
 - Support listening to data changes. 
 - Support data transformations.
