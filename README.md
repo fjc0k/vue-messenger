@@ -1,4 +1,4 @@
-# 📫 Vue Messenger [![Travis](https://img.shields.io/travis/fjc0k/vue-messenger.svg)](https://travis-ci.org/fjc0k/vue-messenger)
+# 📫 Vue Messenger [![Travis](https://travis-ci.org/fjc0k/vue-messenger.svg?branch=master)](https://travis-ci.org/fjc0k/vue-messenger)
 
 [![minified size](https://img.shields.io/badge/minified%20size-1.41%20KB-blue.svg?MIN&style=for-the-badge)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js)
 [![minzipped size](https://img.shields.io/badge/minzipped%20size-743%20B-blue.svg?MZIP&style=for-the-badge)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js)
@@ -67,23 +67,14 @@ You can set `{ sync: true }` to enable two-way data binding by the `.sync` modif
 ```html
 <!-- my-dialog.vue -->
 <template>
-  <div
-    class="my-dialog"
-    @click="sendVisible(!localVisible)">
+  <div @click="sendVisible(!localVisible)">
     <!-- ... -->
   </div>
 </template>
 
 <script>
-  import VueMessenger from 'vue-messenger'
-
   export default {
-    name: 'my-dialog',
-
-    mixins: [
-      VueMessenger
-    ],
-
+    /* ... */
     props: {
       visible: {
         type: Boolean,
@@ -101,16 +92,16 @@ You can set `{ sync: true }` to enable two-way data binding by the `.sync` modif
 </template>
 
 <script>
-  import MyDialog from './my-dialog.vue'
-
   export default {
-    name: 'app',
-
-    components: { MyDialog },
-
+    /* ... */
     data: () => ({
       visible: true
     })
   }
 </script>
 ```
+
+## data
+
+### localProp
+

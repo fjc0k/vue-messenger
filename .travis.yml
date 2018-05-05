@@ -4,9 +4,5 @@ node_js:
 cache:
   directories:
     - node_modules
-install:
-  - npm install
-script:
-  - yarn test
 after_success:
   - yarn codecov
