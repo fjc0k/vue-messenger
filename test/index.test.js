@@ -34,24 +34,6 @@ test('calls onReceiveProp listeners immediately', () => {
   const onReceiveVisibleStub = sinon.stub()
   const onReceiveNonsyncStub = sinon.stub()
 
-  mount(getParent(getChild({
-    methods: {
-      onReceiveValue: onReceiveValueStub,
-      onReceiveVisible: onReceiveVisibleStub,
-      onReceiveNonsync: onReceiveNonsyncStub
-    }
-  })))
-
-  expect(onReceiveValueStub.calledOnceWith('1')).toBe(true)
-  expect(onReceiveVisibleStub.calledOnceWith(true)).toBe(true)
-  expect(onReceiveNonsyncStub.notCalled).toBe(true)
-})
-
-test('calls onReceiveProp listeners immediately', () => {
-  const onReceiveValueStub = sinon.stub()
-  const onReceiveVisibleStub = sinon.stub()
-  const onReceiveNonsyncStub = sinon.stub()
-
   mount(getParent({
     methods: {
       onReceiveValue: onReceiveValueStub,
