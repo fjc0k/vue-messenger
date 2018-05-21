@@ -1,5 +1,5 @@
 /*!
- * vue-messenger v1.1.0
+ * vue-messenger v1.1.1
  * (c) 2018-present fjc0k <fjc0kb@gmail.com> (https://github.com/fjc0k)
  * Released under the MIT License.
  */
@@ -74,7 +74,10 @@ var index = {
           handler: function handler(newValue, oldValue) {
             if ( // If the newValue is equal to the oldValue, ignore it.
             newValue === oldValue || // If the prop-watcher was triggered by the mutation of the localProp, ignore it.
-            newValue === this[transformedLocalProp]) return;
+            newValue === this[transformedLocalProp]) {
+              this[transformedProp] = newValue;
+              return;
+            }
 
             if (isFunction(this[onReceiveProp])) {
               this[onReceiveProp](newValue, function (transformedNewValue) {
