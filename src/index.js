@@ -20,15 +20,23 @@ export default {
     const props = Object.keys(ctx.props)
 
     for (const i in props) {
-      // Get prop & event.
       const prop = props[i]
-      const event = prop === model.prop ?
-        model.event :
-        ctx.props[prop].sync ?
-          `update:${prop}` :
-          null
 
-      if (event) {
+      let shouldProcess = true
+      let shouldEmit = true
+      let event
+
+      if (prop === model.prop) {
+        event = model.event
+      } else if (ctx.props[prop].sync) {
+        event = `update:${prop}`
+      } else if (ctx.props[prop].watch) {
+        shouldEmit = false
+      } else {
+        shouldProcess = false
+      }
+
+      if (shouldProcess) {
         const Prop = upperCaseFirst(prop)
         const localProp = `local${Prop}`
         const transformedProp = `transformed${Prop}`
@@ -39,13 +47,15 @@ export default {
 
         ctx.localDataKeys.push(localProp)
 
-        ctx.methods[sendProp] = function (newValue) {
-          // Compatible to Event value.
-          if (newValue instanceof Event && newValue.target && newValue.target.value) {
-            newValue = newValue.target.value
-          }
+        if (shouldEmit) {
+          ctx.methods[sendProp] = function (newValue) {
+            // Compatible to Event value.
+            if (newValue instanceof Event && newValue.target && newValue.target.value) {
+              newValue = newValue.target.value
+            }
 
-          this[localProp] = newValue
+            this[localProp] = newValue
+          }
         }
 
         ctx.watch[prop] = {
@@ -103,7 +113,9 @@ export default {
 
             this[transformedLocalProp] = newValue
 
-            this.$emit(event, newValue, oldValue)
+            if (shouldEmit) {
+              this.$emit(event, newValue, oldValue)
+            }
           }
         }
       }
