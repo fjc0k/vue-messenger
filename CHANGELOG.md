@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.1.0"></a>
+# [1.1.0](https://github.com/fjc0k/vue-messenger/compare/v1.0.0...v1.1.0) (2018-05-21)
+
+
+### Features
+
+* support watch ([4c556fd](https://github.com/fjc0k/vue-messenger/commit/4c556fd))
+
+
+
 <a name="1.0.0"></a>
 # [1.0.0](https://github.com/fjc0k/vue-messenger/compare/v0.2.3...v1.0.0) (2018-05-05)
 

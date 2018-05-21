@@ -1,5 +1,5 @@
 /*!
- * vue-messenger v1.0.0
+ * vue-messenger v1.1.0
  * (c) 2018-present fjc0k <fjc0kb@gmail.com> (https://github.com/fjc0k)
  * Released under the MIT License.
  */
@@ -36,11 +36,22 @@
       var props = Object.keys(ctx.props);
 
       var _loop = function _loop(i) {
-        // Get prop & event.
         var prop = props[i];
-        var event = prop === model.prop ? model.event : ctx.props[prop].sync ? "update:" + prop : null;
+        var shouldProcess = true;
+        var shouldEmit = true;
+        var event = void 0;
 
-        if (event) {
+        if (prop === model.prop) {
+          event = model.event;
+        } else if (ctx.props[prop].sync) {
+          event = "update:" + prop;
+        } else if (ctx.props[prop].watch) {
+          shouldEmit = false;
+        } else {
+          shouldProcess = false;
+        }
+
+        if (shouldProcess) {
           var Prop = upperCaseFirst(prop);
           var localProp = "local" + Prop;
           var transformedProp = "transformed" + Prop;
@@ -50,14 +61,16 @@
           var onSendProp = "onSend" + Prop;
           ctx.localDataKeys.push(localProp);
 
-          ctx.methods[sendProp] = function (newValue) {
-            // Compatible to Event value.
-            if (newValue instanceof Event && newValue.target && newValue.target.value) {
-              newValue = newValue.target.value;
-            }
+          if (shouldEmit) {
+            ctx.methods[sendProp] = function (newValue) {
+              // Compatible to Event value.
+              if (newValue instanceof Event && newValue.target && newValue.target.value) {
+                newValue = newValue.target.value;
+              }
 
-            this[localProp] = newValue;
-          };
+              this[localProp] = newValue;
+            };
+          }
 
           ctx.watch[prop] = {
             // Immediately receive prop value.
@@ -95,7 +108,10 @@
               }
 
               this[transformedLocalProp] = newValue;
-              this.$emit(event, newValue, oldValue);
+
+              if (shouldEmit) {
+                this.$emit(event, newValue, oldValue);
+              }
             }
           };
         }
