@@ -68,7 +68,10 @@ export default {
               newValue === oldValue ||
               // If the prop-watcher was triggered by the mutation of the localProp, ignore it.
               newValue === this[transformedLocalProp]
-            ) return
+            ) {
+              this[transformedProp] = newValue
+              return
+            }
 
             if (isFunction(this[onReceiveProp])) {
               this[onReceiveProp](
