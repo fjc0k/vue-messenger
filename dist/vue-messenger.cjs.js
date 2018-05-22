@@ -1,5 +1,5 @@
 /*!
- * vue-messenger v1.2.0
+ * vue-messenger v1.2.1
  * (c) 2018-present fjc0k <fjc0kb@gmail.com> (https://github.com/fjc0k)
  * Released under the MIT License.
  */
@@ -13,9 +13,6 @@ function upperCaseFirst(str) {
   if (str in cache) return cache[str];
   cache[str] = str[0].toUpperCase() + str.slice(1);
   return cache[str];
-}
-function shallowCopy(value) {
-  return Array.isArray(value) ? value.slice() : value;
 }
 
 /* eslint guard-for-in: 0 */
@@ -82,8 +79,6 @@ var index = {
               return;
             }
 
-            newValue = shallowCopy(newValue);
-
             if (isFunction(this[onReceiveProp])) {
               this[onReceiveProp](newValue, function (transformedNewValue) {
                 newValue = transformedNewValue;
@@ -101,7 +96,6 @@ var index = {
           immediate: false,
           handler: function handler(newValue, oldValue) {
             if (newValue === oldValue || newValue === this[transformedProp]) return;
-            newValue = shallowCopy(newValue);
 
             if (isFunction(this[onSendProp])) {
               this[onSendProp](newValue, function (transformedNewValue) {

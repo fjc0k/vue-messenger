@@ -4,8 +4,8 @@ English | [🇨🇳中文](./README_zh-CN.md)
 
 [![Travis](https://travis-ci.org/fjc0k/vue-messenger.svg?branch=master)](https://travis-ci.org/fjc0k/vue-messenger)
 [![codecov](https://codecov.io/gh/fjc0k/vue-messenger/branch/master/graph/badge.svg)](https://codecov.io/gh/fjc0k/vue-messenger)
-[![minified size](https://img.shields.io/badge/minified%20size-1.53%20KB-blue.svg?MIN)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js)
-[![minzipped size](https://img.shields.io/badge/minzipped%20size-794%20B-blue.svg?MZIP)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js)
+[![minified size](https://img.shields.io/badge/minified%20size-1.46%20KB-blue.svg?MIN)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js)
+[![minzipped size](https://img.shields.io/badge/minzipped%20size-772%20B-blue.svg?MZIP)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js)
 
 A lightweight Vue mixin for communicating between Parent and Child components.
 
