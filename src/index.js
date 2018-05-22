@@ -1,5 +1,5 @@
 /* eslint guard-for-in: 0 */
-import { isFunction, upperCaseFirst, shallowCopy } from './utils'
+import { isFunction, upperCaseFirst } from './utils'
 
 export default {
   beforeCreate() {
@@ -73,8 +73,6 @@ export default {
               return
             }
 
-            newValue = shallowCopy(newValue)
-
             if (isFunction(this[onReceiveProp])) {
               this[onReceiveProp](
                 newValue,
@@ -100,8 +98,6 @@ export default {
           immediate: false,
           handler(newValue, oldValue) {
             if (newValue === oldValue || newValue === this[transformedProp]) return
-
-            newValue = shallowCopy(newValue)
 
             if (isFunction(this[onSendProp])) {
               this[onSendProp](

@@ -11,7 +11,3 @@ export function upperCaseFirst(str) {
 
   return cache[str]
 }
-
-export function shallowCopy(value) {
-  return Array.isArray(value) ? value.slice() : value
-}
