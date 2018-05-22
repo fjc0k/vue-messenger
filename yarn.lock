@@ -579,9 +579,9 @@
     lodash "^4.2.0"
     to-fast-properties "^2.0.0"
 
-"@bdr/babel-preset-bdr@^1.3.3":
-  version "1.3.3"
-  resolved "http://registry.npm.taobao.org/@bdr/babel-preset-bdr/download/@bdr/babel-preset-bdr-1.3.3.tgz#11f4679a02bbb88fb4bd5019b3b53c6ee54535c7"
+"@bdr/babel-preset-bdr@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@bdr/babel-preset-bdr/-/babel-preset-bdr-1.4.0.tgz#000c6475d08026f8d938589d38761dd496b530d0"
   dependencies:
     "@babel/helper-plugin-utils" "^7.0.0-beta.42"
     "@babel/plugin-proposal-class-properties" "^7.0.0-beta.42"
@@ -1334,12 +1334,12 @@ bcrypt-pbkdf@^1.0.0:
   dependencies:
     tweetnacl "^0.14.3"
 
-bdr@^1.3.4:
-  version "1.3.4"
-  resolved "http://registry.npm.taobao.org/bdr/download/bdr-1.3.4.tgz#31fb58d7c66e438049e4a6153dd78781b24975fb"
+bdr@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/bdr/-/bdr-1.4.0.tgz#d0fad9103c5cb82692a6d54fb73e58cba5f29564"
   dependencies:
     "@babel/core" "^7.0.0-beta.42"
-    "@bdr/babel-preset-bdr" "^1.3.3"
+    "@bdr/babel-preset-bdr" "^1.4.0"
     autoprefixer "^8.2.0"
     cac "^4.4.4"
     consola "^1.3.0"
