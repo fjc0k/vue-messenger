@@ -1,9 +1,33 @@
 /*!
- * vue-messenger v1.2.1
+ * vue-messenger v1.3.0
  * (c) 2018-present fjc0k <fjc0kb@gmail.com> (https://github.com/fjc0k)
  * Released under the MIT License.
  */
 'use strict';
+
+function string(value) {
+  return value == null ? value : String(value);
+}
+function number(value) {
+  return value == null ? value : Number(value);
+}
+function integer(value, radix) {
+  if (radix === void 0) {
+    radix = 10;
+  }
+
+  return value == null ? value : parseInt(value, radix);
+}
+function date(value) {
+  return value == null ? value : value instanceof Date ? value : new Date(value);
+}
+
+var transforms = /*#__PURE__*/Object.freeze({
+  string: string,
+  number: number,
+  integer: integer,
+  date: date
+});
 
 var cache = Object.create(null);
 function isFunction(fn) {
@@ -13,6 +37,29 @@ function upperCaseFirst(str) {
   if (str in cache) return cache[str];
   cache[str] = str[0].toUpperCase() + str.slice(1);
   return cache[str];
+}
+var transformCache = Object.create(null);
+function transform(literal) {
+  if (!(literal in transformCache)) {
+    var transformName;
+    var args;
+
+    if (Array.isArray(literal)) {
+      transformName = literal[0];
+      args = literal.slice(1);
+    } else {
+      transformName = literal;
+      args = [];
+    }
+
+    transformCache[literal] = transforms[transformName] ? function (value) {
+      return transforms[transformName].apply(null, [value].concat(args));
+    } : function (value) {
+      return value;
+    };
+  }
+
+  return transformCache[literal];
 }
 
 /* eslint guard-for-in: 0 */
@@ -48,6 +95,17 @@ var index = {
       }
 
       if (shouldProcess) {
+        var customTransform = ctx.props[prop].transform;
+        var shouldTransform = false;
+        var applyTransform;
+
+        if (customTransform) {
+          shouldTransform = true;
+          applyTransform = isFunction(customTransform) ? function (value) {
+            return value == null ? value : customTransform.call(this, value);
+          } : transform(customTransform);
+        }
+
         var Prop = upperCaseFirst(prop);
         var localProp = "local" + Prop;
         var transformedProp = "transformed" + Prop;
@@ -85,6 +143,11 @@ var index = {
               }, oldValue, function (transformedOldValue) {
                 oldValue = transformedOldValue;
               });
+              if (newValue === oldValue || newValue === this[transformedLocalProp]) return;
+            }
+
+            if (shouldTransform) {
+              newValue = applyTransform.call(this, newValue);
               if (newValue === oldValue || newValue === this[transformedLocalProp]) return;
             }
 
