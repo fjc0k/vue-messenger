@@ -11,15 +11,52 @@ const getChild = (payload = {}) => ({
       type: Boolean,
       sync: true
     },
+    str: {
+      type: Number,
+      watch: true,
+      transform: 'string'
+    },
+    num: {
+      type: String,
+      watch: true,
+      transform: 'number'
+    },
+    int: {
+      type: String,
+      watch: true,
+      transform: 'integer'
+    },
+    int16: {
+      type: String,
+      watch: true,
+      transform: ['integer', 16]
+    },
+    date: {
+      type: String,
+      watch: true,
+      transform: 'date'
+    },
+    func: {
+      type: String,
+      watch: true,
+      transform() {
+        return this.visible ? 1 : 0
+      }
+    },
+    noTransform: {
+      type: String,
+      watch: true,
+      transform: 'no'
+    },
     nonsync: Boolean
   },
   template: '<div />',
   ...payload
 })
 
-const getParent = payload => ({
+const getParent = (payload, template) => ({
   name: 'parent',
-  template: '<child v-model="value" :visible.sync="visible" />',
+  template: template || '<child v-model="value" :visible.sync="visible" />',
   data: () => ({
     value: '1',
     visible: true
@@ -222,4 +259,28 @@ test('sends Event values correctly', () => {
   expect(child.emitted().input.length).toBe(1)
   expect(child.emitted().input[0]).toEqual(['2', '1'])
   expect(wrapper.vm.value).toBe('2')
+})
+
+test('transform props correctly', () => {
+  const wrapper = mount(getParent({}, `
+    <child
+      :str="567"
+      num="88.1"
+      int="-3.2"
+      int16="0xF"
+      date="2015-1-1"
+      func="123"
+      noTransform="80"
+    />
+  `))
+  const data = wrapper.find({ name: 'child' }).vm.$data
+
+  expect(data.localStr).toBe('567')
+  expect(data.localNum).toBe(88.1)
+  expect(data.localInt).toBe(-3)
+  expect(data.localInt16).toBe(15)
+  expect(data.localDate instanceof Date).toBe(true)
+  expect(data.localDate.getFullYear()).toBe(2015)
+  expect(data.localFunc).toBe(0)
+  expect(data.localNoTransform).toBe('80')
 })

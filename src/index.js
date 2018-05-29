@@ -1,5 +1,5 @@
 /* eslint guard-for-in: 0 */
-import { isFunction, upperCaseFirst } from './utils'
+import { isFunction, upperCaseFirst, transform } from './utils'
 
 export default {
   beforeCreate() {
@@ -37,6 +37,20 @@ export default {
       }
 
       if (shouldProcess) {
+        let { transform: customTransform } = ctx.props[prop]
+        let shouldTransform = false
+        let applyTransform
+        if (customTransform) {
+          shouldTransform = true
+          applyTransform = (
+            isFunction(customTransform) ?
+              function (value) {
+                return value == null ? value : customTransform.call(this, value)
+              } :
+              transform(customTransform)
+          )
+        }
+
         const Prop = upperCaseFirst(prop)
         const localProp = `local${Prop}`
         const transformedProp = `transformed${Prop}`
@@ -84,6 +98,12 @@ export default {
                   oldValue = transformedOldValue
                 }
               )
+
+              if (newValue === oldValue || newValue === this[transformedLocalProp]) return
+            }
+
+            if (shouldTransform) {
+              newValue = applyTransform.call(this, newValue)
 
               if (newValue === oldValue || newValue === this[transformedLocalProp]) return
             }

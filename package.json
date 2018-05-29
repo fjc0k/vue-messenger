@@ -45,7 +45,11 @@
   },
   "eslintConfig": {
     "root": true,
-    "extends": "@fir-ui/fir"
+    "extends": "@fir-ui/fir",
+    "rules": {
+      "no-eq-null": 0,
+      "eqeqeq": 0
+    }
   },
   "eslintIgnore": [
     "dist"
