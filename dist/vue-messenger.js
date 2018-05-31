@@ -1,5 +1,5 @@
 /*!
- * vue-messenger v1.3.0
+ * vue-messenger v1.3.1
  * (c) 2018-present fjc0k <fjc0kb@gmail.com> (https://github.com/fjc0k)
  * Released under the MIT License.
  */
@@ -122,7 +122,7 @@
           if (shouldEmit) {
             ctx.methods[sendProp] = function (newValue) {
               // Compatible to Event value.
-              if (newValue instanceof Event && newValue.target && newValue.target.value) {
+              if (newValue instanceof Event && newValue.target && 'value' in newValue.target) {
                 newValue = newValue.target.value;
               }
 
