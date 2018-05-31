@@ -64,7 +64,7 @@ export default {
         if (shouldEmit) {
           ctx.methods[sendProp] = function (newValue) {
             // Compatible to Event value.
-            if (newValue instanceof Event && newValue.target && newValue.target.value) {
+            if (newValue instanceof Event && newValue.target && 'value' in newValue.target) {
               newValue = newValue.target.value
             }
 
