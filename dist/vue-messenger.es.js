@@ -1,5 +1,5 @@
 /*!
- * vue-messenger v1.3.1
+ * vue-messenger v1.3.2
  * (c) 2018-present fjc0k <fjc0kb@gmail.com> (https://github.com/fjc0k)
  * Released under the MIT License.
  */
@@ -156,7 +156,11 @@ var index = {
         ctx.watch[localProp] = {
           immediate: false,
           handler: function handler(newValue, oldValue) {
-            if (newValue === oldValue || newValue === this[transformedProp]) return;
+            if (newValue === oldValue || newValue === this[transformedProp]) {
+              // fix: https://github.com/fjc0k/vue-messenger/issues/1
+              this[transformedLocalProp] = newValue;
+              return;
+            }
 
             if (isFunction(this[onSendProp])) {
               this[onSendProp](newValue, function (transformedNewValue) {

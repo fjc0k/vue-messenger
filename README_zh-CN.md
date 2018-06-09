@@ -4,8 +4,8 @@
 
 [![Travis](https://travis-ci.org/fjc0k/vue-messenger.svg?branch=master)](https://travis-ci.org/fjc0k/vue-messenger)
 [![codecov](https://codecov.io/gh/fjc0k/vue-messenger/branch/master/graph/badge.svg)](https://codecov.io/gh/fjc0k/vue-messenger)
-[![minified size](https://img.shields.io/badge/minified%20size-2.03%20KB-blue.svg?MIN)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js)
-[![minzipped size](https://img.shields.io/badge/minzipped%20size-989%20B-blue.svg?MZIP)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js)
+[![minified size](https://img.shields.io/badge/minified%20size-2.04%20KB-blue.svg?MIN)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js)
+[![minzipped size](https://img.shields.io/badge/minzipped%20size-988%20B-blue.svg?MZIP)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js)
 
 一款轻量的父子组件通信插件。
 
