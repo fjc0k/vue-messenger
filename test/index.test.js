@@ -284,3 +284,33 @@ test('transform props correctly', () => {
   expect(data.localFunc).toBe(0)
   expect(data.localNoTransform).toBe('80')
 })
+
+// https://github.com/fjc0k/vue-messenger/issues/1
+test('issue #1', () => {
+  const wrapper = mount(getParent({ name: 'issue1' }, `
+    <div>
+      <child :visible.sync="visible" ref="c1" />
+      <child :visible.sync="visible" ref="c2" />
+    </div>
+  `))
+  const c1 = wrapper.find({ ref: 'c1' }).vm
+  const c2 = wrapper.find({ ref: 'c2' }).vm
+
+  expect(c1.localVisible).toBe(true)
+  expect(c2.localVisible).toBe(true)
+
+  c1.sendVisible(false)
+
+  expect(c1.localVisible).toBe(false)
+  expect(c2.localVisible).toBe(false)
+
+  c2.sendVisible(true)
+
+  expect(c1.localVisible).toBe(true)
+  expect(c2.localVisible).toBe(true)
+
+  c2.sendVisible(false)
+
+  expect(c1.localVisible).toBe(false)
+  expect(c2.localVisible).toBe(false)
+})

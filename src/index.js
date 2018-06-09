@@ -117,7 +117,14 @@ export default {
         ctx.watch[localProp] = {
           immediate: false,
           handler(newValue, oldValue) {
-            if (newValue === oldValue || newValue === this[transformedProp]) return
+            if (
+              newValue === oldValue ||
+              newValue === this[transformedProp]
+            ) {
+              // fix: https://github.com/fjc0k/vue-messenger/issues/1
+              this[transformedLocalProp] = newValue
+              return
+            }
 
             if (isFunction(this[onSendProp])) {
               this[onSendProp](
