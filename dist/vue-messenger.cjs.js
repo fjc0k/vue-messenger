@@ -1,5 +1,5 @@
 /*!
- * vue-messenger v2.0.1
+ * vue-messenger v2.1.0
  * (c) 2018-present fjc0k <fjc0kb@gmail.com> (https://github.com/fjc0k)
  * Released under the MIT License.
  */
@@ -41,7 +41,18 @@ var index = {
 
     var _loop = function _loop() {
       var prop = _arr[_i];
-      var descriptor = props[prop];
+      var descriptor = props[prop]; // enum
+
+      if (Array.isArray(descriptor.enum)) {
+        descriptor.validator = function (value) {
+          return descriptor.enum.indexOf(value) >= 0;
+        };
+
+        if (!('default' in descriptor)) {
+          descriptor.default = descriptor.enum[0];
+        }
+      }
+
       var isModelProp = prop === model.prop;
       var event = isModelProp ? model.event : "update:" + prop;
       var shouldEmit = isModelProp || !!descriptor.sync;
