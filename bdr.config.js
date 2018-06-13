@@ -10,8 +10,8 @@ module.exports = {
     const fs = require('fs')
 
     const tasks = [
-      ['README.md', /[^-]+(?=-blue\.svg\?MIN)/, /[^-]+(?=-blue\.svg\?MZIP)/],
-      ['README_zh-CN.md', /[^-]+(?=-blue\.svg\?MIN)/, /[^-]+(?=-blue\.svg\?MZIP)/]
+      ['README.md', /[^-]+(?=-blue\.svg\?MIN)/, /[^-]+(?=-blue\.svg\?MZIP)/]
+      // ['README_zh-CN.md', /[^-]+(?=-blue\.svg\?MIN)/, /[^-]+(?=-blue\.svg\?MZIP)/]
     ]
 
     tasks.forEach(task => {
