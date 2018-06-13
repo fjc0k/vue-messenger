@@ -23,6 +23,15 @@ export default {
 
     for (const prop of Object.keys(props)) {
       const descriptor = props[prop]
+
+      // enum
+      if (Array.isArray(descriptor.enum)) {
+        descriptor.validator = value => descriptor.enum.indexOf(value) >= 0
+        if (!('default' in descriptor)) {
+          descriptor.default = descriptor.enum[0]
+        }
+      }
+
       const isModelProp = prop === model.prop
 
       const event = isModelProp ? model.event : `update:${prop}`
