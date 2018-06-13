@@ -1,5 +1,5 @@
 /*!
- * vue-messenger v1.3.2
+ * vue-messenger v2.0.0
  * (c) 2018-present fjc0k <fjc0kb@gmail.com> (https://github.com/fjc0k)
  * Released under the MIT License.
  */
@@ -26,6 +26,8 @@ var defaultModel = {
 };
 var index = {
   beforeCreate: function beforeCreate() {
+    if (this.__MessengerBeforeCreate__) return;
+    this.__MessengerBeforeCreate__ = true;
     var options = this.$options;
     if (!options.localDataKeys) options.localDataKeys = [];
     if (!options.methods) options.methods = {};
@@ -164,6 +166,8 @@ var index = {
     }
   },
   data: function data() {
+    if (this.__MessengerData__) return;
+    this.__MessengerData__ = true;
     return this.$options.localDataKeys.reduce(function (data, key) {
       data[key] = null;
       return data;
