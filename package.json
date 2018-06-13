@@ -1,7 +1,7 @@
 {
   "name": "vue-messenger",
   "version": "2.0.0",
-  "description": "A lightweight Vue mixin for communicating between Parent and Child components.",
+  "description": "Listen and transform props before receiving & sending them.",
   "license": "MIT",
   "main": "dist/vue-messenger.cjs.js",
   "module": "dist/vue-messenger.es.js",
