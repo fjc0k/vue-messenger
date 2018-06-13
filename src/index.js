@@ -1,158 +1,154 @@
-/* eslint guard-for-in: 0 */
-import { isFunction, upperCaseFirst, transform } from './utils'
+import { upperCaseFirst, isFunction, isObject } from './utils'
+
+const defaultModel = {
+  prop: 'value',
+  event: 'input'
+}
 
 export default {
   beforeCreate() {
-    const ctx = this.$options
+    if (this.__MessengerBeforeCreate__) return
 
-    // Normalize options.
-    if (!ctx.localDataKeys) ctx.localDataKeys = []
-    if (!ctx.methods) ctx.methods = {}
-    if (!ctx.watch) ctx.watch = {}
+    this.__MessengerBeforeCreate__ = true
 
-    // Normalize model.
-    const model = ctx.model || {
-      prop: 'value',
-      event: 'input'
-    }
+    const options = this.$options
 
-    // Get props.
-    const props = Object.keys(ctx.props)
+    if (!options.localDataKeys) options.localDataKeys = []
+    if (!options.methods) options.methods = {}
+    if (!options.watch) options.watch = {}
 
-    for (const i in props) {
-      const prop = props[i]
+    const model = options.model || defaultModel
 
-      let shouldProcess = true
-      let shouldEmit = true
-      let event
+    const props = options.props
 
-      if (prop === model.prop) {
-        event = model.event
-      } else if (ctx.props[prop].sync) {
-        event = `update:${prop}`
-      } else if (ctx.props[prop].watch) {
-        shouldEmit = false
-      } else {
-        shouldProcess = false
+    for (const prop of Object.keys(props)) {
+      const descriptor = props[prop]
+      const isModelProp = prop === model.prop
+
+      const event = isModelProp ? model.event : `update:${prop}`
+      const shouldEmit = isModelProp || !!descriptor.sync
+      const shouldTransform = !!descriptor.transform
+      const shouldProcess = shouldEmit || shouldTransform
+
+      if (!shouldProcess) return
+
+      let receiveTransform
+      let sendTransform
+      const transform = descriptor.transform
+      if (isFunction(transform)) {
+        receiveTransform = transform
+      } else if (isObject(transform)) {
+        if (isFunction(transform.receive)) {
+          receiveTransform = transform.receive
+        }
+        if (isFunction(transform.send)) {
+          sendTransform = transform.send
+        }
       }
 
-      if (shouldProcess) {
-        let { transform: customTransform } = ctx.props[prop]
-        let shouldTransform = false
-        let applyTransform
-        if (customTransform) {
-          shouldTransform = true
-          applyTransform = (
-            isFunction(customTransform) ?
-              function (value) {
-                return value == null ? value : customTransform.call(this, value)
-              } :
-              transform(customTransform)
-          )
+      let onReceive
+      let onSend
+      let onChange
+      const on = descriptor.on
+      if (isObject(on)) {
+        if (isFunction(on.receive)) {
+          onReceive = on.receive
         }
+        if (isFunction(on.send)) {
+          onSend = on.send
+        }
+        if (isFunction(on.change)) {
+          onChange = on.change
+        }
+      }
 
-        const Prop = upperCaseFirst(prop)
-        const localProp = `local${Prop}`
-        const transformedProp = `transformed${Prop}`
-        const transformedLocalProp = `transformedLocal${Prop}`
-        const sendProp = `send${Prop}`
-        const onReceiveProp = `onReceive${Prop}`
-        const onSendProp = `onSend${Prop}`
+      const Prop = upperCaseFirst(prop)
+      const localProp = `local${Prop}`
+      const lastProp = `last${Prop}$$`
+      const lastLocalProp = `lastLocal${Prop}$$`
+      const sendProp = `send${Prop}`
 
-        ctx.localDataKeys.push(localProp)
+      options.localDataKeys.push(localProp)
 
-        if (shouldEmit) {
-          ctx.methods[sendProp] = function (newValue) {
-            // Compatible to Event value.
-            if (newValue instanceof Event && newValue.target && 'value' in newValue.target) {
-              newValue = newValue.target.value
-            }
-
-            this[localProp] = newValue
+      options.watch[prop] = {
+        immediate: true,
+        handler(newValue, oldValue) {
+          if (newValue === oldValue || newValue === this[lastLocalProp]) {
+            this[lastProp] = newValue
+            return
           }
-        }
 
-        ctx.watch[prop] = {
-          // Immediately receive prop value.
-          immediate: true,
+          if (receiveTransform && newValue != null) {
+            newValue = receiveTransform.call(this, newValue)
 
-          handler(newValue, oldValue) {
-            if (
-              // If the newValue is equal to the oldValue, ignore it.
-              newValue === oldValue ||
-              // If the prop-watcher was triggered by the mutation of the localProp, ignore it.
-              newValue === this[transformedLocalProp]
-            ) {
-              this[transformedProp] = newValue
+            if (newValue === oldValue || newValue === this[lastLocalProp]) return
+          }
+
+          if (onReceive) {
+            if (onReceive.call(this, newValue, oldValue) === false) {
               return
             }
-
-            if (isFunction(this[onReceiveProp])) {
-              this[onReceiveProp](
-                newValue,
-                transformedNewValue => {
-                  newValue = transformedNewValue
-                },
-                oldValue,
-                transformedOldValue => {
-                  oldValue = transformedOldValue
-                }
-              )
-
-              if (newValue === oldValue || newValue === this[transformedLocalProp]) return
-            }
-
-            if (shouldTransform) {
-              newValue = applyTransform.call(this, newValue)
-
-              if (newValue === oldValue || newValue === this[transformedLocalProp]) return
-            }
-
-            this[transformedProp] = newValue
-
-            this[localProp] = newValue
           }
-        }
 
-        ctx.watch[localProp] = {
-          immediate: false,
-          handler(newValue, oldValue) {
-            if (
-              newValue === oldValue ||
-              newValue === this[transformedProp]
-            ) {
-              // fix: https://github.com/fjc0k/vue-messenger/issues/1
-              this[transformedLocalProp] = newValue
+          if (onChange) {
+            if (onChange.call(this, newValue, oldValue) === false) {
               return
             }
+          }
 
-            if (isFunction(this[onSendProp])) {
-              this[onSendProp](
-                newValue,
-                transformedNewValue => {
-                  newValue = transformedNewValue
-                },
-                oldValue,
-                transformedOldValue => {
-                  oldValue = transformedOldValue
-                }
-              )
+          this[lastProp] = newValue
 
-              if (newValue === oldValue || newValue === this[transformedProp]) return
-            }
+          this[localProp] = newValue
+        }
+      }
 
-            this[transformedLocalProp] = newValue
+      options.watch[localProp] = {
+        immediate: false,
+        handler(newValue, oldValue) {
+          if (newValue === oldValue || newValue === this[lastProp]) {
+            this[lastLocalProp] = newValue
+            return
+          }
 
-            if (shouldEmit) {
-              this.$emit(event, newValue, oldValue)
+          if (sendTransform && newValue != null) {
+            newValue = sendTransform.call(this, newValue)
+
+            if (newValue === oldValue || newValue === this[lastProp]) return
+          }
+
+          if (onSend) {
+            if (onSend.call(this, newValue, oldValue) === false) {
+              return
             }
           }
+
+          if (onChange) {
+            if (onChange.call(this, newValue, oldValue) === false) {
+              return
+            }
+          }
+
+          this[lastLocalProp] = newValue
+
+          if (shouldEmit) {
+            this.$emit(event, newValue, oldValue)
+          }
         }
+      }
+
+      if (!shouldEmit) return
+
+      options.methods[sendProp] = function (newValue) {
+        this[localProp] = newValue
       }
     }
   },
 
   data() {
+    if (this.__MessengerData__) return
+
+    this.__MessengerData__ = true
+
     return this.$options.localDataKeys.reduce((data, key) => {
       data[key] = null
       return data

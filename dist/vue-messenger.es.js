@@ -3,186 +3,164 @@
  * (c) 2018-present fjc0k <fjc0kb@gmail.com> (https://github.com/fjc0k)
  * Released under the MIT License.
  */
-function string(value) {
-  return value == null ? value : String(value);
-}
-function number(value) {
-  return value == null ? value : Number(value);
-}
-function integer(value, radix) {
-  if (radix === void 0) {
-    radix = 10;
-  }
+var isFunction = (function (value) {
+  return typeof value === 'function';
+});
 
-  return value == null ? value : parseInt(value, radix);
-}
-function date(value) {
-  return value == null ? value : value instanceof Date ? value : new Date(value);
-}
-
-var transforms = /*#__PURE__*/Object.freeze({
-  string: string,
-  number: number,
-  integer: integer,
-  date: date
+var isObject = (function (value) {
+  return value && typeof value === 'object';
 });
 
 var cache = Object.create(null);
-function isFunction(fn) {
-  return typeof fn === 'function';
-}
-function upperCaseFirst(str) {
-  if (str in cache) return cache[str];
-  cache[str] = str[0].toUpperCase() + str.slice(1);
-  return cache[str];
-}
-var transformCache = Object.create(null);
-function transform(literal) {
-  if (!(literal in transformCache)) {
-    var transformName;
-    var args;
-
-    if (Array.isArray(literal)) {
-      transformName = literal[0];
-      args = literal.slice(1);
-    } else {
-      transformName = literal;
-      args = [];
-    }
-
-    transformCache[literal] = transforms[transformName] ? function (value) {
-      return transforms[transformName].apply(null, [value].concat(args));
-    } : function (value) {
-      return value;
-    };
+var upperCaseFirst = (function (str) {
+  if (!(str in cache)) {
+    cache[str] = str.charAt(0).toUpperCase() + str.slice(1);
   }
 
-  return transformCache[literal];
-}
+  return cache[str];
+});
 
-/* eslint guard-for-in: 0 */
+var defaultModel = {
+  prop: 'value',
+  event: 'input'
+};
 var index = {
   beforeCreate: function beforeCreate() {
-    var ctx = this.$options; // Normalize options.
+    var options = this.$options;
+    if (!options.localDataKeys) options.localDataKeys = [];
+    if (!options.methods) options.methods = {};
+    if (!options.watch) options.watch = {};
+    var model = options.model || defaultModel;
+    var props = options.props;
 
-    if (!ctx.localDataKeys) ctx.localDataKeys = [];
-    if (!ctx.methods) ctx.methods = {};
-    if (!ctx.watch) ctx.watch = {}; // Normalize model.
+    var _arr = Object.keys(props);
 
-    var model = ctx.model || {
-      prop: 'value',
-      event: 'input' // Get props.
+    var _loop = function _loop() {
+      var prop = _arr[_i];
+      var descriptor = props[prop];
+      var isModelProp = prop === model.prop;
+      var event = isModelProp ? model.event : "update:" + prop;
+      var shouldEmit = isModelProp || !!descriptor.sync;
+      var shouldTransform = !!descriptor.transform;
+      var shouldProcess = shouldEmit || shouldTransform;
+      if (!shouldProcess) return {
+        v: void 0
+      };
+      var receiveTransform = void 0;
+      var sendTransform = void 0;
+      var transform = descriptor.transform;
 
-    };
-    var props = Object.keys(ctx.props);
-
-    var _loop = function _loop(i) {
-      var prop = props[i];
-      var shouldProcess = true;
-      var shouldEmit = true;
-      var event = void 0;
-
-      if (prop === model.prop) {
-        event = model.event;
-      } else if (ctx.props[prop].sync) {
-        event = "update:" + prop;
-      } else if (ctx.props[prop].watch) {
-        shouldEmit = false;
-      } else {
-        shouldProcess = false;
-      }
-
-      if (shouldProcess) {
-        var customTransform = ctx.props[prop].transform;
-        var shouldTransform = false;
-        var applyTransform;
-
-        if (customTransform) {
-          shouldTransform = true;
-          applyTransform = isFunction(customTransform) ? function (value) {
-            return value == null ? value : customTransform.call(this, value);
-          } : transform(customTransform);
+      if (isFunction(transform)) {
+        receiveTransform = transform;
+      } else if (isObject(transform)) {
+        if (isFunction(transform.receive)) {
+          receiveTransform = transform.receive;
         }
 
-        var Prop = upperCaseFirst(prop);
-        var localProp = "local" + Prop;
-        var transformedProp = "transformed" + Prop;
-        var transformedLocalProp = "transformedLocal" + Prop;
-        var sendProp = "send" + Prop;
-        var onReceiveProp = "onReceive" + Prop;
-        var onSendProp = "onSend" + Prop;
-        ctx.localDataKeys.push(localProp);
+        if (isFunction(transform.send)) {
+          sendTransform = transform.send;
+        }
+      }
 
-        if (shouldEmit) {
-          ctx.methods[sendProp] = function (newValue) {
-            // Compatible to Event value.
-            if (newValue instanceof Event && newValue.target && 'value' in newValue.target) {
-              newValue = newValue.target.value;
-            }
+      var onReceive = void 0;
+      var onSend = void 0;
+      var onChange = void 0;
+      var on = descriptor.on;
 
-            this[localProp] = newValue;
-          };
+      if (isObject(on)) {
+        if (isFunction(on.receive)) {
+          onReceive = on.receive;
         }
 
-        ctx.watch[prop] = {
-          // Immediately receive prop value.
-          immediate: true,
-          handler: function handler(newValue, oldValue) {
-            if ( // If the newValue is equal to the oldValue, ignore it.
-            newValue === oldValue || // If the prop-watcher was triggered by the mutation of the localProp, ignore it.
-            newValue === this[transformedLocalProp]) {
-              this[transformedProp] = newValue;
-              return;
-            }
+        if (isFunction(on.send)) {
+          onSend = on.send;
+        }
 
-            if (isFunction(this[onReceiveProp])) {
-              this[onReceiveProp](newValue, function (transformedNewValue) {
-                newValue = transformedNewValue;
-              }, oldValue, function (transformedOldValue) {
-                oldValue = transformedOldValue;
-              });
-              if (newValue === oldValue || newValue === this[transformedLocalProp]) return;
-            }
-
-            if (shouldTransform) {
-              newValue = applyTransform.call(this, newValue);
-              if (newValue === oldValue || newValue === this[transformedLocalProp]) return;
-            }
-
-            this[transformedProp] = newValue;
-            this[localProp] = newValue;
-          }
-        };
-        ctx.watch[localProp] = {
-          immediate: false,
-          handler: function handler(newValue, oldValue) {
-            if (newValue === oldValue || newValue === this[transformedProp]) {
-              // fix: https://github.com/fjc0k/vue-messenger/issues/1
-              this[transformedLocalProp] = newValue;
-              return;
-            }
-
-            if (isFunction(this[onSendProp])) {
-              this[onSendProp](newValue, function (transformedNewValue) {
-                newValue = transformedNewValue;
-              }, oldValue, function (transformedOldValue) {
-                oldValue = transformedOldValue;
-              });
-              if (newValue === oldValue || newValue === this[transformedProp]) return;
-            }
-
-            this[transformedLocalProp] = newValue;
-
-            if (shouldEmit) {
-              this.$emit(event, newValue, oldValue);
-            }
-          }
-        };
+        if (isFunction(on.change)) {
+          onChange = on.change;
+        }
       }
+
+      var Prop = upperCaseFirst(prop);
+      var localProp = "local" + Prop;
+      var lastProp = "last" + Prop + "$$";
+      var lastLocalProp = "lastLocal" + Prop + "$$";
+      var sendProp = "send" + Prop;
+      options.localDataKeys.push(localProp);
+      options.watch[prop] = {
+        immediate: true,
+        handler: function handler(newValue, oldValue) {
+          if (newValue === oldValue || newValue === this[lastLocalProp]) {
+            this[lastProp] = newValue;
+            return;
+          }
+
+          if (receiveTransform && newValue != null) {
+            newValue = receiveTransform.call(this, newValue);
+            if (newValue === oldValue || newValue === this[lastLocalProp]) return;
+          }
+
+          if (onReceive) {
+            if (onReceive.call(this, newValue, oldValue) === false) {
+              return;
+            }
+          }
+
+          if (onChange) {
+            if (onChange.call(this, newValue, oldValue) === false) {
+              return;
+            }
+          }
+
+          this[lastProp] = newValue;
+          this[localProp] = newValue;
+        }
+      };
+      options.watch[localProp] = {
+        immediate: false,
+        handler: function handler(newValue, oldValue) {
+          if (newValue === oldValue || newValue === this[lastProp]) {
+            this[lastLocalProp] = newValue;
+            return;
+          }
+
+          if (sendTransform && newValue != null) {
+            newValue = sendTransform.call(this, newValue);
+            if (newValue === oldValue || newValue === this[lastProp]) return;
+          }
+
+          if (onSend) {
+            if (onSend.call(this, newValue, oldValue) === false) {
+              return;
+            }
+          }
+
+          if (onChange) {
+            if (onChange.call(this, newValue, oldValue) === false) {
+              return;
+            }
+          }
+
+          this[lastLocalProp] = newValue;
+
+          if (shouldEmit) {
+            this.$emit(event, newValue, oldValue);
+          }
+        }
+      };
+      if (!shouldEmit) return {
+        v: void 0
+      };
+
+      options.methods[sendProp] = function (newValue) {
+        this[localProp] = newValue;
+      };
     };
 
-    for (var i in props) {
-      _loop(i);
+    for (var _i = 0; _i < _arr.length; _i++) {
+      var _ret = _loop();
+
+      if (typeof _ret === "object") return _ret.v;
     }
   },
   data: function data() {
