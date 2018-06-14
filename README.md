@@ -18,9 +18,30 @@ A series of useful enhancements to Vue component props:
 - [Enum-type props](#enum-type-props)
 - [Two-way data binding props](#two-way-data-binding-props)
 
-## Transform props
+## Install
 
-### Example
+### Package
+
+```bash
+# yarn
+yarn add vue-messenger
+
+# or, npm
+npm i vue-messenger --save
+```
+
+### CDN
+
+- [jsDelivr](//www.jsdelivr.com/package/npm/vue-messenger)
+- [UNPKG](//unpkg.com/vue-messenger/)
+
+Available as global `VueMessenger`.
+
+## Usage
+
+### Transform props
+
+#### Example
 
 - before
 
@@ -63,9 +84,9 @@ A series of useful enhancements to Vue component props:
     </script>
     ```
 
-## Listen for receiving props values
+### Listen for receiving props
 
-### Example
+#### Example
 
 - before
 
@@ -100,9 +121,9 @@ A series of useful enhancements to Vue component props:
     }
     ```
 
-## Enum-type props
+### Enum-type props
 
-### Example
+#### Example
 
 - before
 
@@ -132,9 +153,9 @@ A series of useful enhancements to Vue component props:
     }
     ```
 
-## Two-way data binding props
+### Two-way data binding props
 
-### Example
+#### Example
 
 - before
 
@@ -178,56 +199,3 @@ A series of useful enhancements to Vue component props:
     }
     </script>
     ```
-<!-- 
-# Install
-
-## Package
-
-```bash
-# yarn
-yarn add vue-messenger
-
-# or, npm
-npm i vue-messenger
-```
-
-## CDN
-
-- [jsDelivr](//www.jsdelivr.com/package/npm/vue-messenger)
-- [UNPKG](//unpkg.com/vue-messenger/)
-
-Available as global `VueMessenger`. -->
-
-<!-- # Example
-
-```html
-<template>
-  <input
-    v-model="localValue"
-    v-show="localVisible"
-  />
-</template>
-
-<script>
-export default {
-  props: {
-    value: {
-      type: [String, Number],
-      transform: {
-        receive: value => String(value),
-        send: Number
-      },
-      on: {
-        receive: console.log,
-        send: console.log,
-        change: console.log
-      }
-    },
-    visible: {
-      type: Boolean,
-      sync: true
-    }
-  }
-}
-</script>
-``` -->
