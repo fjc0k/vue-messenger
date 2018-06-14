@@ -14,8 +14,9 @@
 A series of useful enhancements to Vue component props:
 
 - [Transform props](#transform-props)
-- [Listen for receiving props](#listen-for-receiving-props)
 - [Enum-type props](#enum-type-props)
+- [Numeric-type props](#numeric-type-props)
+- [Listen for receiving props](#listen-for-receiving-props)
 - [Two-way data binding props](#two-way-data-binding-props)
 
 ## Install
@@ -84,6 +85,71 @@ Available as global `VueMessenger`.
     </script>
     ```
 
+### Enum-type props
+
+#### Example
+
+- before
+
+    ```js
+    export default {
+      props: {
+        size: {
+          type: String,
+          default: 'small',
+          validator: value => ['small', 'large'].indexOf(value) >= 0
+        }
+      }
+    }
+    ```
+
+- after
+
+    ```js
+    export default {
+      mixins: [VueMessenger],
+      props: {
+        size: {
+          type: String,
+          enum: ['small', 'large']
+        }
+      }
+    }
+    ```
+
+### Numeric-type props
+
+#### Example
+
+- before
+
+    ```js
+    export default {
+      props: {
+        count: {
+          type: [Number, String],
+          default: 0,
+          validator: value => !isNaN(value - parseFloat(value))
+          }
+        }
+      }
+    }
+    ```
+
+- after
+
+    ```js
+    export default {
+      mixins: [VueMessenger],
+      props: {
+        count: {
+          numeric: true,
+          default: 0
+        }
+      }
+    }
+    ```
+
 ### Listen for receiving props
 
 #### Example
@@ -116,38 +182,6 @@ Available as global `VueMessenger`.
               console.log(newCount, oldCount)
             }
           }
-        }
-      }
-    }
-    ```
-
-### Enum-type props
-
-#### Example
-
-- before
-
-    ```js
-    export default {
-      props: {
-        size: {
-          type: String,
-          default: 'small',
-          validator: value => ['small', 'large'].indexOf(value) >= 0
-        }
-      }
-    }
-    ```
-
-- after
-
-    ```js
-    export default {
-      mixins: [VueMessenger],
-      props: {
-        size: {
-          type: String,
-          enum: ['small', 'large']
         }
       }
     }
