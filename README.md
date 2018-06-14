@@ -13,15 +13,14 @@
 
 A series of useful enhancements to Vue component props:
 
-- [Transform props values](#transform-props-values)
-- [Listen for receiving props values](#listen-receiving-props-values)
+- [Transform props](#transform-props)
+- [Listen for receiving props](#listen-for-receiving-props)
 - [Enum-type props](#enum-type-props)
-- [Two-way data bindings](#two-way-data-bindings)
+- [Two-way data binding props](#two-way-data-binding-props)
 
+## Transform props
 
-## Why ?
-
-### Transform props values
+### Example
 
 - before
 
@@ -64,8 +63,10 @@ A series of useful enhancements to Vue component props:
     </script>
     ```
 
-### Listen for receiving props values
-    
+## Listen for receiving props values
+
+### Example
+
 - before
 
     ```js
@@ -99,7 +100,9 @@ A series of useful enhancements to Vue component props:
     }
     ```
 
-### Enum-type props
+## Enum-type props
+
+### Example
 
 - before
 
@@ -129,7 +132,9 @@ A series of useful enhancements to Vue component props:
     }
     ```
 
-### Two-way data bindings
+## Two-way data binding props
+
+### Example
 
 - before
 
