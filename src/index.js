@@ -1,4 +1,4 @@
-import { upperCaseFirst, isFunction, isObject } from './utils'
+import { upperCaseFirst, isFunction, isObject, isNumeric } from './utils'
 
 const defaultModel = {
   prop: 'value',
@@ -26,9 +26,25 @@ export default {
 
       // enum
       if (Array.isArray(descriptor.enum)) {
-        descriptor.validator = value => descriptor.enum.indexOf(value) >= 0
+        const nextValidator = descriptor.validator
+        descriptor.validator = function (value) {
+          return descriptor.enum.indexOf(value) >= 0 && (
+            nextValidator ? nextValidator.apply(this, arguments) : true
+          )
+        }
         if (!('default' in descriptor)) {
           descriptor.default = descriptor.enum[0]
+        }
+      }
+
+      // numeric
+      if (descriptor.numeric === true) {
+        const nextValidator = descriptor.validator
+        descriptor.type = [String, Number]
+        descriptor.validator = function (value) {
+          return isNumeric(value) && (
+            nextValidator ? nextValidator.apply(this, arguments) : true
+          )
         }
       }
 

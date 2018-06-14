@@ -33,7 +33,7 @@ npm i vue-messenger --save
 ### CDN
 
 - [jsDelivr](//www.jsdelivr.com/package/npm/vue-messenger)
-- [UNPKG](//unpkg.com/vue-messenger/)
+- [UNPKG](//unpkg.com/vue-messenger/dist/)
 
 Available as global `VueMessenger`.
 
