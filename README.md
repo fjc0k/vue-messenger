@@ -11,7 +11,13 @@
 
 # Vue Messenger
 
-A series of useful enhancements to Vue component props.
+A series of useful enhancements to Vue component props:
+
+- [Transform props values](#transform-props-values)
+- [Listen for receiving props values](#listen-receiving-props-values)
+- [Enum-type props](#enum-type-props)
+- [Two-way data bindings](#two-way-data-bindings)
+
 
 ## Why ?
 
@@ -58,7 +64,7 @@ A series of useful enhancements to Vue component props.
     </script>
     ```
 
-### Listen for changes in props values
+### Listen for receiving props values
     
 - before
 
@@ -93,7 +99,7 @@ A series of useful enhancements to Vue component props.
     }
     ```
 
-### Enumerated props
+### Enum-type props
 
 - before
 
