@@ -55,116 +55,116 @@ export default {
       const shouldTransform = !!descriptor.transform
       const shouldProcess = shouldEmit || shouldTransform
 
-      if (!shouldProcess) return
-
-      let receiveTransform
-      let sendTransform
-      const transform = descriptor.transform
-      if (isFunction(transform)) {
-        receiveTransform = transform
-      } else if (isObject(transform)) {
-        if (isFunction(transform.receive)) {
-          receiveTransform = transform.receive
+      if (shouldProcess) {
+        let receiveTransform
+        let sendTransform
+        const transform = descriptor.transform
+        if (isFunction(transform)) {
+          receiveTransform = transform
+        } else if (isObject(transform)) {
+          if (isFunction(transform.receive)) {
+            receiveTransform = transform.receive
+          }
+          if (isFunction(transform.send)) {
+            sendTransform = transform.send
+          }
         }
-        if (isFunction(transform.send)) {
-          sendTransform = transform.send
-        }
-      }
 
-      let onReceive
-      let onSend
-      let onChange
-      const on = descriptor.on
-      if (isObject(on)) {
-        if (isFunction(on.receive)) {
-          onReceive = on.receive
+        let onReceive
+        let onSend
+        let onChange
+        const on = descriptor.on
+        if (isObject(on)) {
+          if (isFunction(on.receive)) {
+            onReceive = on.receive
+          }
+          if (isFunction(on.send)) {
+            onSend = on.send
+          }
+          if (isFunction(on.change)) {
+            onChange = on.change
+          }
         }
-        if (isFunction(on.send)) {
-          onSend = on.send
-        }
-        if (isFunction(on.change)) {
-          onChange = on.change
-        }
-      }
 
-      const Prop = upperCaseFirst(prop)
-      const localProp = `local${Prop}`
-      const lastProp = `last${Prop}$$`
-      const lastLocalProp = `lastLocal${Prop}$$`
-      const sendProp = `send${Prop}`
+        const Prop = upperCaseFirst(prop)
+        const localProp = `local${Prop}`
+        const lastProp = `last${Prop}$$`
+        const lastLocalProp = `lastLocal${Prop}$$`
+        const sendProp = `send${Prop}`
 
-      options.localDataKeys.push(localProp)
+        options.localDataKeys.push(localProp)
 
-      options.watch[prop] = {
-        immediate: true,
-        handler(newValue, oldValue) {
-          if (newValue === oldValue || newValue === this[lastLocalProp]) {
+        options.watch[prop] = {
+          immediate: true,
+          handler(newValue, oldValue) {
+            if (newValue === oldValue || newValue === this[lastLocalProp]) {
+              this[lastProp] = newValue
+              return
+            }
+
+            if (receiveTransform && newValue != null) {
+              newValue = receiveTransform.call(this, newValue)
+
+              if (newValue === oldValue || newValue === this[lastLocalProp]) return
+            }
+
+            if (onReceive) {
+              if (onReceive.call(this, newValue, oldValue) === false) {
+                return
+              }
+            }
+
+            if (onChange) {
+              if (onChange.call(this, newValue, oldValue) === false) {
+                return
+              }
+            }
+
             this[lastProp] = newValue
-            return
+
+            this[localProp] = newValue
           }
-
-          if (receiveTransform && newValue != null) {
-            newValue = receiveTransform.call(this, newValue)
-
-            if (newValue === oldValue || newValue === this[lastLocalProp]) return
-          }
-
-          if (onReceive) {
-            if (onReceive.call(this, newValue, oldValue) === false) {
-              return
-            }
-          }
-
-          if (onChange) {
-            if (onChange.call(this, newValue, oldValue) === false) {
-              return
-            }
-          }
-
-          this[lastProp] = newValue
-
-          this[localProp] = newValue
         }
-      }
 
-      options.watch[localProp] = {
-        immediate: false,
-        handler(newValue, oldValue) {
-          if (newValue === oldValue || newValue === this[lastProp]) {
+        options.watch[localProp] = {
+          immediate: false,
+          handler(newValue, oldValue) {
+            if (newValue === oldValue || newValue === this[lastProp]) {
+              this[lastLocalProp] = newValue
+              return
+            }
+
+            if (sendTransform && newValue != null) {
+              newValue = sendTransform.call(this, newValue)
+
+              if (newValue === oldValue || newValue === this[lastProp]) return
+            }
+
+            if (onSend) {
+              if (onSend.call(this, newValue, oldValue) === false) {
+                return
+              }
+            }
+
+            if (onChange) {
+              if (onChange.call(this, newValue, oldValue) === false) {
+                return
+              }
+            }
+
             this[lastLocalProp] = newValue
-            return
-          }
 
-          if (sendTransform && newValue != null) {
-            newValue = sendTransform.call(this, newValue)
-
-            if (newValue === oldValue || newValue === this[lastProp]) return
-          }
-
-          if (onSend) {
-            if (onSend.call(this, newValue, oldValue) === false) {
-              return
+            if (shouldEmit) {
+              this.$emit(event, newValue, oldValue)
             }
-          }
-
-          if (onChange) {
-            if (onChange.call(this, newValue, oldValue) === false) {
-              return
-            }
-          }
-
-          this[lastLocalProp] = newValue
-
-          if (shouldEmit) {
-            this.$emit(event, newValue, oldValue)
           }
         }
-      }
 
-      if (!shouldEmit) return
-
-      options.methods[sendProp] = function (newValue) {
-        this[localProp] = newValue
+        if (shouldEmit) {
+          options.methods[sendProp] = function (newValue) {
+            this[localProp] = newValue
+          }
+        }
       }
     }
   },
