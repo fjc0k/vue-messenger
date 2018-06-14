@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.2.0"></a>
+# [2.2.0](https://github.com/fjc0k/vue-messenger/compare/v2.1.0...v2.2.0) (2018-06-14)
+
+
+### Features
+
+* support numeric-type props ([9bbafb0](https://github.com/fjc0k/vue-messenger/commit/9bbafb0))
+
+
+
 <a name="2.1.0"></a>
 # [2.1.0](https://github.com/fjc0k/vue-messenger/compare/v2.0.1...v2.1.0) (2018-06-13)
 

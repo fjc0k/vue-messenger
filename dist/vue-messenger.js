@@ -1,5 +1,5 @@
 /*!
- * vue-messenger v2.1.0
+ * vue-messenger v2.2.0
  * (c) 2018-present fjc0k <fjc0kb@gmail.com> (https://github.com/fjc0k)
  * Released under the MIT License.
  */
@@ -11,6 +11,12 @@
 
   var isFunction = (function (value) {
     return typeof value === 'function';
+  });
+
+  // https://github.com/jquery/jquery/blob/master/src/deprecated.js#L84
+  var isNumeric = (function (value) {
+    var type = typeof value;
+    return (type === 'number' || type === 'string') && !isNaN(value - parseFloat(value));
   });
 
   var isObject = (function (value) {
@@ -48,13 +54,25 @@
         var descriptor = props[prop]; // enum
 
         if (Array.isArray(descriptor.enum)) {
+          var nextValidator = descriptor.validator;
+
           descriptor.validator = function (value) {
-            return descriptor.enum.indexOf(value) >= 0;
+            return descriptor.enum.indexOf(value) >= 0 && (nextValidator ? nextValidator.apply(this, arguments) : true);
           };
 
           if (!('default' in descriptor)) {
             descriptor.default = descriptor.enum[0];
           }
+        } // numeric
+
+
+        if (descriptor.numeric === true) {
+          var _nextValidator = descriptor.validator;
+          descriptor.type = [String, Number];
+
+          descriptor.validator = function (value) {
+            return isNumeric(value) && (_nextValidator ? _nextValidator.apply(this, arguments) : true);
+          };
         }
 
         var isModelProp = prop === model.prop;
