@@ -1,11 +1,13 @@
 # Vue Messenger
 
-[![Travis](https://travis-ci.org/fjc0k/vue-messenger.svg?branch=master)](https://travis-ci.org/fjc0k/vue-messenger)
+<!-- [![Travis](https://travis-ci.org/fjc0k/vue-messenger.svg?branch=master)](https://travis-ci.org/fjc0k/vue-messenger)
 [![codecov](https://codecov.io/gh/fjc0k/vue-messenger/branch/master/graph/badge.svg)](https://codecov.io/gh/fjc0k/vue-messenger)
 [![minified size](https://img.shields.io/badge/minified%20size-2%20KB-blue.svg?MIN)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js)
-[![minzipped size](https://img.shields.io/badge/minzipped%20size-966%20B-blue.svg?MZIP)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js)
+[![minzipped size](https://img.shields.io/badge/minzipped%20size-966%20B-blue.svg?MZIP)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js) -->
 
-Listen and transform props before receiving & sending them.
+<p align="center"><img width="100" src="https://vuejs.org/images/logo.png" alt="Vue logo" style="-webkit-transform:rotate(-145deg);-moz-transform:rotate(-145deg);-ms-transform:rotate(-145deg);-o-transform:rotate(-145deg);transform:rotate(-145deg)"></p>
+
+A series of useful enhancements to Vue component props and two-way data bindings.
 
 # Install
 
@@ -26,7 +28,7 @@ npm i vue-messenger
 
 Available as global `VueMessenger`.
 
-# Example
+<!-- # Example
 
 ```html
 <template>
@@ -58,4 +60,4 @@ export default {
   }
 }
 </script>
-```
+``` -->
