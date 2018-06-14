@@ -1,13 +1,126 @@
-# Vue Messenger
-
-<!-- [![Travis](https://travis-ci.org/fjc0k/vue-messenger.svg?branch=master)](https://travis-ci.org/fjc0k/vue-messenger)
-[![codecov](https://codecov.io/gh/fjc0k/vue-messenger/branch/master/graph/badge.svg)](https://codecov.io/gh/fjc0k/vue-messenger)
-[![minified size](https://img.shields.io/badge/minified%20size-2%20KB-blue.svg?MIN)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js)
-[![minzipped size](https://img.shields.io/badge/minzipped%20size-966%20B-blue.svg?MZIP)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js) -->
-
 <p align="center"><img width="100" src="./images/logo.png" alt="Vue Messenger logo"></p>
 
-A series of useful enhancements to Vue component props and two-way data bindings.
+<p align="center">
+  <a href="https://travis-ci.org/fjc0k/vue-messenger"><img src="https://travis-ci.org/fjc0k/vue-messenger.svg?branch=master" alt="Build Status"></a>
+  <a href="https://codecov.io/gh/fjc0k/vue-messenger"><img src="https://codecov.io/gh/fjc0k/vue-messenger/branch/master/graph/badge.svg" alt="Coverage Status"></a>
+  <a href="https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js"><img src="https://img.shields.io/badge/minzipped%20size-966%20B-blue.svg?MIN" alt="Minified Size"></a>
+  <a href="https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js"><img src="https://img.shields.io/badge/minified%20size-2%20KB-blue.svg?MZIP" alt="Minzipped Size"></a>
+  <a href="https://www.npmjs.com/package/vue-messenger"><img src="https://img.shields.io/npm/v/vue-messenger.svg" alt="Version"></a>
+  <a href="https://www.npmjs.com/package/vue-messenger"><img src="https://img.shields.io/npm/l/vue-messenger.svg" alt="License"></a>
+</p>
+
+# Vue Messenger
+
+A series of useful enhancements to Vue component props.
+
+## Why?
+
+- Sometimes we need to transform component prop values, for which we must define computed props. e.g.
+
+  - before
+
+      ```html
+      <template>
+        <div>{{ normalizedCount }}</div>
+      </template>
+      
+      <script>
+      export default {
+        props: {
+          count: [Number, String]
+        },
+        computed: {
+          normalizedCount() {
+            return Number(this.count)
+          }
+        }
+      }
+      </script>
+      ```
+  
+  - after
+
+      ```html
+      <template>
+        <div>{{ localCount }}</div>
+      </template>
+      
+      <script>
+      export default {
+        props: {
+          count: {
+            type: [Number, String],
+            transform: Number
+          }
+        }
+      }
+      </script>
+      ```
+
+- Sometimes we need to listen for changes in component prop values, for which we must define watch functions. e.g.
+    
+  - before
+
+      ```js
+      export default {
+        props: {
+          count: [Number, String]
+        },
+        watch: {
+          count(newCount, oldCount) {
+            console.log(newCount, oldCount)
+          }
+        }
+      }
+      ```
+  
+  - after
+
+      ```js
+      export default {
+        props: {
+          count: {
+            type: [Number, String],
+            on: {
+              receive(newCount, oldCount) {
+                console.log(newCount, oldCount)
+              }
+            }
+          }
+        }
+      }
+      ```
+
+- Sometimes we need to define an enumerated prop, for which we must customize a validator function. e.g.
+
+  - before
+
+      ```js
+      export default {
+        props: {
+          size: {
+            type: String,
+            default: 'small',
+            validator: value => ['small', 'large'].indexOf(value) >= 0
+          }
+        }
+      }
+      ```
+
+  - after
+
+      ```js
+      export default {
+        props: {
+          size: {
+            type: String,
+            enum: ['small', 'large']
+          }
+        }
+      }
+      ```
+
+Sometimes we need to do two-way data bindings, for which we must define data props.
 
 # Install
 
