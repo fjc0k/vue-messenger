@@ -1,5 +1,5 @@
 /*!
- * vue-messenger v2.2.0
+ * vue-messenger v2.2.1
  * (c) 2018-present fjc0k <fjc0kb@gmail.com> (https://github.com/fjc0k)
  * Released under the MIT License.
  */
@@ -9,10 +9,8 @@ var isFunction = (function (value) {
   return typeof value === 'function';
 });
 
-// https://github.com/jquery/jquery/blob/master/src/deprecated.js#L84
 var isNumeric = (function (value) {
-  var type = typeof value;
-  return (type === 'number' || type === 'string') && !isNaN(value - parseFloat(value));
+  return !isNaN(value - parseFloat(value));
 });
 
 var isObject = (function (value) {
@@ -76,124 +74,121 @@ var index = {
       var shouldEmit = isModelProp || !!descriptor.sync;
       var shouldTransform = !!descriptor.transform;
       var shouldProcess = shouldEmit || shouldTransform;
-      if (!shouldProcess) return {
-        v: void 0
-      };
-      var receiveTransform = void 0;
-      var sendTransform = void 0;
-      var transform = descriptor.transform;
 
-      if (isFunction(transform)) {
-        receiveTransform = transform;
-      } else if (isObject(transform)) {
-        if (isFunction(transform.receive)) {
-          receiveTransform = transform.receive;
+      if (shouldProcess) {
+        var receiveTransform;
+        var sendTransform;
+        var transform = descriptor.transform;
+
+        if (isFunction(transform)) {
+          receiveTransform = transform;
+        } else if (isObject(transform)) {
+          if (isFunction(transform.receive)) {
+            receiveTransform = transform.receive;
+          }
+
+          if (isFunction(transform.send)) {
+            sendTransform = transform.send;
+          }
         }
 
-        if (isFunction(transform.send)) {
-          sendTransform = transform.send;
+        var onReceive;
+        var onSend;
+        var onChange;
+        var on = descriptor.on;
+
+        if (isObject(on)) {
+          if (isFunction(on.receive)) {
+            onReceive = on.receive;
+          }
+
+          if (isFunction(on.send)) {
+            onSend = on.send;
+          }
+
+          if (isFunction(on.change)) {
+            onChange = on.change;
+          }
         }
-      }
 
-      var onReceive = void 0;
-      var onSend = void 0;
-      var onChange = void 0;
-      var on = descriptor.on;
+        var Prop = upperCaseFirst(prop);
+        var localProp = "local" + Prop;
+        var lastProp = "last" + Prop + "$$";
+        var lastLocalProp = "lastLocal" + Prop + "$$";
+        var sendProp = "send" + Prop;
+        options.localDataKeys.push(localProp);
+        options.watch[prop] = {
+          immediate: true,
+          handler: function handler(newValue, oldValue) {
+            if (newValue === oldValue || newValue === this[lastLocalProp]) {
+              this[lastProp] = newValue;
+              return;
+            }
 
-      if (isObject(on)) {
-        if (isFunction(on.receive)) {
-          onReceive = on.receive;
-        }
+            if (receiveTransform && newValue != null) {
+              newValue = receiveTransform.call(this, newValue);
+              if (newValue === oldValue || newValue === this[lastLocalProp]) return;
+            }
 
-        if (isFunction(on.send)) {
-          onSend = on.send;
-        }
+            if (onReceive) {
+              if (onReceive.call(this, newValue, oldValue) === false) {
+                return;
+              }
+            }
 
-        if (isFunction(on.change)) {
-          onChange = on.change;
-        }
-      }
+            if (onChange) {
+              if (onChange.call(this, newValue, oldValue) === false) {
+                return;
+              }
+            }
 
-      var Prop = upperCaseFirst(prop);
-      var localProp = "local" + Prop;
-      var lastProp = "last" + Prop + "$$";
-      var lastLocalProp = "lastLocal" + Prop + "$$";
-      var sendProp = "send" + Prop;
-      options.localDataKeys.push(localProp);
-      options.watch[prop] = {
-        immediate: true,
-        handler: function handler(newValue, oldValue) {
-          if (newValue === oldValue || newValue === this[lastLocalProp]) {
             this[lastProp] = newValue;
-            return;
+            this[localProp] = newValue;
           }
-
-          if (receiveTransform && newValue != null) {
-            newValue = receiveTransform.call(this, newValue);
-            if (newValue === oldValue || newValue === this[lastLocalProp]) return;
-          }
-
-          if (onReceive) {
-            if (onReceive.call(this, newValue, oldValue) === false) {
+        };
+        options.watch[localProp] = {
+          immediate: false,
+          handler: function handler(newValue, oldValue) {
+            if (newValue === oldValue || newValue === this[lastProp]) {
+              this[lastLocalProp] = newValue;
               return;
             }
-          }
 
-          if (onChange) {
-            if (onChange.call(this, newValue, oldValue) === false) {
-              return;
+            if (sendTransform && newValue != null) {
+              newValue = sendTransform.call(this, newValue);
+              if (newValue === oldValue || newValue === this[lastProp]) return;
             }
-          }
 
-          this[lastProp] = newValue;
-          this[localProp] = newValue;
-        }
-      };
-      options.watch[localProp] = {
-        immediate: false,
-        handler: function handler(newValue, oldValue) {
-          if (newValue === oldValue || newValue === this[lastProp]) {
+            if (onSend) {
+              if (onSend.call(this, newValue, oldValue) === false) {
+                return;
+              }
+            }
+
+            if (onChange) {
+              if (onChange.call(this, newValue, oldValue) === false) {
+                return;
+              }
+            }
+
             this[lastLocalProp] = newValue;
-            return;
-          }
 
-          if (sendTransform && newValue != null) {
-            newValue = sendTransform.call(this, newValue);
-            if (newValue === oldValue || newValue === this[lastProp]) return;
-          }
-
-          if (onSend) {
-            if (onSend.call(this, newValue, oldValue) === false) {
-              return;
+            if (shouldEmit) {
+              this.$emit(event, newValue, oldValue);
             }
           }
+        };
 
-          if (onChange) {
-            if (onChange.call(this, newValue, oldValue) === false) {
-              return;
-            }
-          }
-
-          this[lastLocalProp] = newValue;
-
-          if (shouldEmit) {
-            this.$emit(event, newValue, oldValue);
-          }
+        if (shouldEmit) {
+          options.methods[sendProp] = function (newValue) {
+            this[localProp] = newValue;
+          };
         }
-      };
-      if (!shouldEmit) return {
-        v: void 0
-      };
-
-      options.methods[sendProp] = function (newValue) {
-        this[localProp] = newValue;
-      };
+      }
     };
 
     for (var _i = 0; _i < _arr.length; _i++) {
-      var _ret = _loop();
-
-      if (typeof _ret === "object") return _ret.v;
+      _loop();
     }
   },
   data: function data() {

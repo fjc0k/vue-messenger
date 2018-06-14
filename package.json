@@ -1,6 +1,6 @@
 {
   "name": "vue-messenger",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Listen and transform props before receiving & sending them.",
   "license": "MIT",
   "main": "dist/vue-messenger.cjs.js",
