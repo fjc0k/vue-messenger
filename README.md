@@ -13,115 +13,161 @@
 
 A series of useful enhancements to Vue component props.
 
-## Why?
+## Why ?
 
-- Sometimes we need to transform component prop values, for which we must define computed props. e.g.
+### Transform props values
 
-  - before
+- before
 
-      ```html
-      <template>
-        <div>{{ normalizedCount }}</div>
-      </template>
-      
-      <script>
-      export default {
-        props: {
-          count: [Number, String]
-        },
-        computed: {
-          normalizedCount() {
-            return Number(this.count)
-          }
-        }
-      }
-      </script>
-      ```
-  
-  - after
-
-      ```html
-      <template>
-        <div>{{ localCount }}</div>
-      </template>
-      
-      <script>
-      export default {
-        props: {
-          count: {
-            type: [Number, String],
-            transform: Number
-          }
-        }
-      }
-      </script>
-      ```
-
-- Sometimes we need to listen for changes in component prop values, for which we must define watch functions. e.g.
+    ```html
+    <template>
+      <div>{{ normalizedCount }}</div>
+    </template>
     
-  - before
-
-      ```js
-      export default {
-        props: {
-          count: [Number, String]
-        },
-        watch: {
-          count(newCount, oldCount) {
-            console.log(newCount, oldCount)
-          }
+    <script>
+    export default {
+      props: {
+        count: [Number, String]
+      },
+      computed: {
+        normalizedCount() {
+          return Number(this.count)
         }
       }
-      ```
-  
-  - after
+    }
+    </script>
+    ```
 
-      ```js
-      export default {
-        props: {
-          count: {
-            type: [Number, String],
-            on: {
-              receive(newCount, oldCount) {
-                console.log(newCount, oldCount)
-              }
+- after
+
+    ```html
+    <template>
+      <div>{{ localCount }}</div>
+    </template>
+    
+    <script>
+    export default {
+      mixins: [VueMessenger],
+      props: {
+        count: {
+          type: [Number, String],
+          transform: Number
+        }
+      }
+    }
+    </script>
+    ```
+
+### Listen for changes in props values
+    
+- before
+
+    ```js
+    export default {
+      props: {
+        count: [Number, String]
+      },
+      watch: {
+        count(newCount, oldCount) {
+          console.log(newCount, oldCount)
+        }
+      }
+    }
+    ```
+
+- after
+
+    ```js
+    export default {
+      mixins: [VueMessenger],
+      props: {
+        count: {
+          type: [Number, String],
+          on: {
+            receive(newCount, oldCount) {
+              console.log(newCount, oldCount)
             }
           }
         }
       }
-      ```
+    }
+    ```
 
-- Sometimes we need to define an enumerated prop, for which we must customize a validator function. e.g.
+### Enumerated props
 
-  - before
+- before
 
-      ```js
-      export default {
-        props: {
-          size: {
-            type: String,
-            default: 'small',
-            validator: value => ['small', 'large'].indexOf(value) >= 0
+    ```js
+    export default {
+      props: {
+        size: {
+          type: String,
+          default: 'small',
+          validator: value => ['small', 'large'].indexOf(value) >= 0
+        }
+      }
+    }
+    ```
+
+- after
+
+    ```js
+    export default {
+      mixins: [VueMessenger],
+      props: {
+        size: {
+          type: String,
+          enum: ['small', 'large']
+        }
+      }
+    }
+    ```
+
+### Two-way data bindings
+
+- before
+
+    ```html
+    <template>
+      <input v-model="curValue" />
+    </template>
+
+    <script>
+    export default {
+      props: {
+        value: String
+      },
+      computed: {
+        curValue: {
+          get() {
+            return this.value
+          },
+          set(newValue) {
+            this.$emit('input', newValue)
           }
         }
       }
-      ```
+    }
+    </script>
+    ```
+  
+- after
 
-  - after
+    ```html
+    <template>
+      <input v-model="localValue" />
+    </template>
 
-      ```js
-      export default {
-        props: {
-          size: {
-            type: String,
-            enum: ['small', 'large']
-          }
-        }
+    <script>
+    export default {
+      mixins: [VueMessenger],
+      props: {
+        value: String
       }
-      ```
-
-Sometimes we need to do two-way data bindings, for which we must define data props.
-
+    }
+    </script>
+    ```
+<!-- 
 # Install
 
 ## Package
@@ -139,7 +185,7 @@ npm i vue-messenger
 - [jsDelivr](//www.jsdelivr.com/package/npm/vue-messenger)
 - [UNPKG](//unpkg.com/vue-messenger/)
 
-Available as global `VueMessenger`.
+Available as global `VueMessenger`. -->
 
 <!-- # Example
 
