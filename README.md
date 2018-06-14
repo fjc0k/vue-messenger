@@ -5,7 +5,7 @@
 [![minified size](https://img.shields.io/badge/minified%20size-2%20KB-blue.svg?MIN)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js)
 [![minzipped size](https://img.shields.io/badge/minzipped%20size-966%20B-blue.svg?MZIP)](https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js) -->
 
-<p align="center"><img width="100" src="https://vuejs.org/images/logo.png" alt="Vue logo" style="-webkit-transform:rotate(-145deg);-moz-transform:rotate(-145deg);-ms-transform:rotate(-145deg);-o-transform:rotate(-145deg);transform:rotate(-145deg)"></p>
+<p align="center"><img width="100" src="./images/logo.png" alt="Vue Messenger logo"></p>
 
 A series of useful enhancements to Vue component props and two-way data bindings.
 
