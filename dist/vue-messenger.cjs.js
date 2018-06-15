@@ -65,7 +65,9 @@ var index = {
         descriptor.type = [String, Number];
 
         descriptor.validator = function (value) {
-          return isNumeric(value) && (_nextValidator ? _nextValidator.apply(this, arguments) : true);
+          var infinite = descriptor.infinite,
+              range = descriptor.range;
+          return (infinite && (value === Infinity || value === -Infinity) || isNumeric(value)) && (Array.isArray(range) ? value >= range[0] && value <= range[1] : true) && (_nextValidator ? _nextValidator.apply(this, arguments) : true);
         };
       }
 
