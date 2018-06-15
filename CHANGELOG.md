@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.3.0"></a>
+# [2.3.0](https://github.com/fjc0k/vue-messenger/compare/v2.2.1...v2.3.0) (2018-06-15)
+
+
+### Bug Fixes
+
+* **on:** support normal prop ([0332788](https://github.com/fjc0k/vue-messenger/commit/0332788))
+
+
+### Features
+
+* **numeric:** support infinite & range ([72614e4](https://github.com/fjc0k/vue-messenger/commit/72614e4))
+
+
+
 <a name="2.2.1"></a>
 ## [2.2.1](https://github.com/fjc0k/vue-messenger/compare/v2.2.0...v2.2.1) (2018-06-14)
 

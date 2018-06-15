@@ -1,5 +1,5 @@
 /*!
- * vue-messenger v2.2.1
+ * vue-messenger v2.3.0
  * (c) 2018-present fjc0k <fjc0kb@gmail.com> (https://github.com/fjc0k)
  * Released under the MIT License.
  */
@@ -75,7 +75,26 @@ var index = {
       var event = isModelProp ? model.event : "update:" + prop;
       var shouldEmit = isModelProp || !!descriptor.sync;
       var shouldTransform = !!descriptor.transform;
+      var shouldListen = descriptor.on && isFunction(descriptor.on.receive || descriptor.on.change);
       var shouldProcess = shouldEmit || shouldTransform;
+      var onReceive = void 0;
+      var onSend = void 0;
+      var onChange = void 0;
+      var on = descriptor.on;
+
+      if ((shouldListen || shouldProcess) && isObject(on)) {
+        if (isFunction(on.receive)) {
+          onReceive = on.receive;
+        }
+
+        if (isFunction(on.send)) {
+          onSend = on.send;
+        }
+
+        if (isFunction(on.change)) {
+          onChange = on.change;
+        }
+      }
 
       if (shouldProcess) {
         var receiveTransform;
@@ -91,25 +110,6 @@ var index = {
 
           if (isFunction(transform.send)) {
             sendTransform = transform.send;
-          }
-        }
-
-        var onReceive;
-        var onSend;
-        var onChange;
-        var on = descriptor.on;
-
-        if (isObject(on)) {
-          if (isFunction(on.receive)) {
-            onReceive = on.receive;
-          }
-
-          if (isFunction(on.send)) {
-            onSend = on.send;
-          }
-
-          if (isFunction(on.change)) {
-            onChange = on.change;
           }
         }
 
@@ -186,6 +186,21 @@ var index = {
             this[localProp] = newValue;
           };
         }
+      } else if (shouldListen) {
+        options.watch[prop] = {
+          immediate: true,
+          handler: function handler(newValue, oldValue) {
+            if (newValue === oldValue) return;
+
+            if (onReceive) {
+              onReceive.call(this, newValue, oldValue);
+            }
+
+            if (onChange) {
+              onChange.call(this, newValue, oldValue);
+            }
+          }
+        };
       }
     };
 
