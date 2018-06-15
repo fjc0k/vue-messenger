@@ -1,6 +1,6 @@
 {
   "name": "vue-messenger",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "A series of useful enhancements to Vue component props.",
   "license": "MIT",
   "main": "dist/vue-messenger.cjs.js",

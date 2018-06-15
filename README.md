@@ -4,7 +4,7 @@
   <a href="https://travis-ci.org/fjc0k/vue-messenger"><img src="https://travis-ci.org/fjc0k/vue-messenger.svg?branch=master" alt="Build Status"></a>
   <a href="https://codecov.io/gh/fjc0k/vue-messenger"><img src="https://codecov.io/gh/fjc0k/vue-messenger/branch/master/graph/badge.svg" alt="Coverage Status"></a>
   <a href="https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js"><img src="https://img.shields.io/badge/minzipped%20size-2.36%20KB-blue.svg?MIN" alt="Minified Size"></a>
-  <a href="https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js"><img src="https://img.shields.io/badge/minified%20size-1.1%20KB-blue.svg?MZIP" alt="Minzipped Size"></a>
+  <a href="https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js"><img src="https://img.shields.io/badge/minified%20size-1.11%20KB-blue.svg?MZIP" alt="Minzipped Size"></a>
   <a href="https://www.npmjs.com/package/vue-messenger"><img src="https://img.shields.io/npm/v/vue-messenger.svg" alt="Version"></a>
   <a href="https://www.npmjs.com/package/vue-messenger"><img src="https://img.shields.io/npm/l/vue-messenger.svg" alt="License"></a>
 </p>
