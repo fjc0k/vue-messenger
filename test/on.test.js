@@ -4,10 +4,11 @@ import Messenger from '../src'
 
 const getComponent = (on = {}) => {
   return {
-    template: `<child v-model="value" :visible.sync="visible" />`,
+    template: `<child v-model="value" :visible.sync="visible" :x="x" />`,
     data: () => ({
       value: 'foo',
-      visible: false
+      visible: false,
+      x: 'x'
     }),
     components: {
       child: {
@@ -23,6 +24,9 @@ const getComponent = (on = {}) => {
             type: Boolean,
             sync: true,
             on: on.visible
+          },
+          x: {
+            on: on.x
           }
         }
       }
@@ -41,6 +45,11 @@ test('immediately call onReceive & onChange', () => {
       receive: sinon.stub(),
       send: sinon.stub(),
       change: sinon.stub()
+    },
+    x: {
+      receive: sinon.stub(),
+      send: sinon.stub(),
+      change: sinon.stub()
     }
   }
   mount(getComponent(on))
@@ -50,6 +59,9 @@ test('immediately call onReceive & onChange', () => {
   expect(on.visible.receive.calledOnceWith(false)).toBe(true)
   expect(on.visible.send.notCalled).toBe(true)
   expect(on.visible.change.calledOnceWith(false)).toBe(true)
+  expect(on.x.receive.calledOnceWith('x')).toBe(true)
+  expect(on.x.send.notCalled).toBe(true)
+  expect(on.x.change.calledOnceWith('x')).toBe(true)
 })
 
 test('change data to trigger onReceive & onChange', () => {
@@ -60,6 +72,11 @@ test('change data to trigger onReceive & onChange', () => {
       change: sinon.stub()
     },
     visible: {
+      receive: sinon.stub(),
+      send: sinon.stub(),
+      change: sinon.stub()
+    },
+    x: {
       receive: sinon.stub(),
       send: sinon.stub(),
       change: sinon.stub()
@@ -76,9 +93,10 @@ test('change data to trigger onReceive & onChange', () => {
   expect(on.value.receive.calledTwice).toBe(true)
   expect(on.value.send.notCalled).toBe(true)
   expect(on.value.change.calledTwice).toBe(true)
-  expect(on.visible.receive.calledOnceWith(false)).toBe(true)
-  expect(on.visible.send.notCalled).toBe(true)
-  expect(on.visible.change.calledOnceWith(false)).toBe(true)
+  wrapper.vm.x = 'y'
+  expect(on.x.receive.calledTwice).toBe(true)
+  expect(on.x.send.notCalled).toBe(true)
+  expect(on.x.change.calledTwice).toBe(true)
 })
 
 test('change localData to trigger onSend & onChange', () => {

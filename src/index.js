@@ -66,7 +66,29 @@ export default {
       const event = isModelProp ? model.event : `update:${prop}`
       const shouldEmit = isModelProp || !!descriptor.sync
       const shouldTransform = !!descriptor.transform
+      const shouldListen = (
+        descriptor.on && isFunction(
+          descriptor.on.receive ||
+          descriptor.on.change
+        )
+      )
       const shouldProcess = shouldEmit || shouldTransform
+
+      let onReceive
+      let onSend
+      let onChange
+      const on = descriptor.on
+      if ((shouldListen || shouldProcess) && isObject(on)) {
+        if (isFunction(on.receive)) {
+          onReceive = on.receive
+        }
+        if (isFunction(on.send)) {
+          onSend = on.send
+        }
+        if (isFunction(on.change)) {
+          onChange = on.change
+        }
+      }
 
       if (shouldProcess) {
         let receiveTransform
@@ -80,22 +102,6 @@ export default {
           }
           if (isFunction(transform.send)) {
             sendTransform = transform.send
-          }
-        }
-
-        let onReceive
-        let onSend
-        let onChange
-        const on = descriptor.on
-        if (isObject(on)) {
-          if (isFunction(on.receive)) {
-            onReceive = on.receive
-          }
-          if (isFunction(on.send)) {
-            onSend = on.send
-          }
-          if (isFunction(on.change)) {
-            onChange = on.change
           }
         }
 
@@ -176,6 +182,19 @@ export default {
         if (shouldEmit) {
           options.methods[sendProp] = function (newValue) {
             this[localProp] = newValue
+          }
+        }
+      } else if (shouldListen) {
+        options.watch[prop] = {
+          immediate: true,
+          handler(newValue, oldValue) {
+            if (newValue === oldValue) return
+            if (onReceive) {
+              onReceive.call(this, newValue, oldValue)
+            }
+            if (onChange) {
+              onChange.call(this, newValue, oldValue)
+            }
           }
         }
       }
