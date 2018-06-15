@@ -42,7 +42,19 @@ export default {
         const nextValidator = descriptor.validator
         descriptor.type = [String, Number]
         descriptor.validator = function (value) {
-          return isNumeric(value) && (
+          return (
+            (
+              descriptor.infinite && (
+                value === Number.NEGATIVE_INFINITY ||
+                value === Number.POSITIVE_INFINITY
+              )
+            ) || isNumeric(value)
+          ) && (
+            Array.isArray(descriptor.range) ? (
+              value >= descriptor.range[0] &&
+              value <= descriptor.range[1]
+            ) : true
+          ) && (
             nextValidator ? nextValidator.apply(this, arguments) : true
           )
         }

@@ -11,7 +11,7 @@
 
 # Vue Messenger
 
-A series of useful enhancements to Vue component props:
+A series of useful enhancements to Vue components props:
 
 - [Transform props](#transform-props)
 - [Enum-type props](#enum-type-props)
