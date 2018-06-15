@@ -3,8 +3,8 @@
 <p align="center">
   <a href="https://travis-ci.org/fjc0k/vue-messenger"><img src="https://travis-ci.org/fjc0k/vue-messenger.svg?branch=master" alt="Build Status"></a>
   <a href="https://codecov.io/gh/fjc0k/vue-messenger"><img src="https://codecov.io/gh/fjc0k/vue-messenger/branch/master/graph/badge.svg" alt="Coverage Status"></a>
-  <a href="https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js"><img src="https://img.shields.io/badge/minzipped%20size-2.19%20KB-blue.svg?MIN" alt="Minified Size"></a>
-  <a href="https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js"><img src="https://img.shields.io/badge/minified%20size-1.05%20KB-blue.svg?MZIP" alt="Minzipped Size"></a>
+  <a href="https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js"><img src="https://img.shields.io/badge/minzipped%20size-2.36%20KB-blue.svg?MIN" alt="Minified Size"></a>
+  <a href="https://github.com/fjc0k/vue-messenger/blob/master/dist/vue-messenger.min.js"><img src="https://img.shields.io/badge/minified%20size-1.1%20KB-blue.svg?MZIP" alt="Minzipped Size"></a>
   <a href="https://www.npmjs.com/package/vue-messenger"><img src="https://img.shields.io/npm/v/vue-messenger.svg" alt="Version"></a>
   <a href="https://www.npmjs.com/package/vue-messenger"><img src="https://img.shields.io/npm/l/vue-messenger.svg" alt="License"></a>
 </p>
@@ -66,42 +66,42 @@ export default {
 
 ### Transform props
 
-#### Example
+To transform a prop, add a `transform: value => transformedValue` function to its descriptor, and use `this.local${PropName}` to get transformed prop. e.g.
 
-##### 😑 before
+#### 😑 before
 
 ```html
 <template>
-  <div>{{ normalizedCount }}</div>
+  <div>{{ normalizedMessage }}</div>
 </template>
 
 <script>
 export default {
   props: {
-    count: [Number, String]
+    message: [Number, String]
   },
   computed: {
-    normalizedCount() {
-      return Number(this.count)
+    normalizedMessage() {
+      return String(this.message).trim().replace(/@/g, '(a)')
     }
   }
 }
 </script>
 ```
 
-##### 😀 after
+#### 😀 after
 
 ```html
 <template>
-  <div>{{ localCount }}</div>
+  <div>{{ localMessage }}</div>
 </template>
 
 <script>
 export default {
   props: {
-    count: {
+    message: {
       type: [Number, String],
-      transform: Number
+      transform: message => String(message).trim().replace(/@/g, '(a)')
     }
   }
 }
@@ -110,9 +110,9 @@ export default {
 
 ### Enum-type props
 
-#### Example
+To define a enum-type prop, add a `enum` array to its descriptor, and its `default` value will be `enum[0]` if the descriptor doesn't contain `default` attribute. e.g.
 
-##### 😑 before
+#### 😑 before
 
 ```js
 export default {
@@ -126,7 +126,7 @@ export default {
 }
 ```
 
-##### 😀 after
+#### 😀 after
 
 ```js
 export default {
@@ -141,9 +141,9 @@ export default {
 
 ### Numeric-type props
 
-#### Example
+To define a numeric-type prop, add `numeric: true` to its descriptor. Besides, you can set `infinite` to `ture` to allow infinite numbers, which are `-Infinity` and `Infinity`. e.g.
 
-##### 😑 before
+#### 😑 before
 
 ```js
 export default {
@@ -153,12 +153,17 @@ export default {
       default: 0,
       validator: value => !isNaN(value - parseFloat(value))
       }
+    },
+    max: {
+      type: [Number, String],
+      default: Infinity,
+      validator: value => value === Infinity || !isNaN(value - parseFloat(value))
     }
   }
 }
 ```
 
-##### 😀 after
+#### 😀 after
 
 ```js
 export default {
@@ -166,6 +171,11 @@ export default {
     count: {
       numeric: true,
       default: 0
+    },
+    max: {
+      numeric: true,
+      infinite: true,
+      default: Infinity
     }
   }
 }
@@ -173,9 +183,9 @@ export default {
 
 ### Listen for receiving props
 
-#### Example
+To listen for receiving a prop, add `on: { receive: (newValue, oldValue) => void }` object to its descriptor. e.g.
 
-##### 😑 before
+#### 😑 before
 
 ```js
 export default {
@@ -190,7 +200,7 @@ export default {
 }
 ```
 
-##### 😀 after
+#### 😀 after
 
 ```js
 export default {
@@ -215,13 +225,16 @@ export default {
 
 ```html
 <template>
-  <input v-model="curValue" />
+  <div v-show="curVisible">
+    <input v-model="curValue" />
+  </div>
 </template>
 
 <script>
 export default {
   props: {
-    value: String
+    value: String,
+    visible: Boolean
   },
   computed: {
     curValue: {
@@ -229,7 +242,18 @@ export default {
         return this.value
       },
       set(newValue) {
+        if (newValue === 'hide') {
+          this.curVisible = true
+        }
         this.$emit('input', newValue)
+      }
+    },
+    curVisible: {
+      get() {
+        return this.visible
+      },
+      set(newVisible) {
+        this.$emit('update:visible', newVisible)
       }
     }
   }
@@ -241,14 +265,28 @@ export default {
 
 ```html
 <template>
-  <input v-model="localValue" />
+  <div v-show="localVisible">
+    <input v-model="localValue" />
+  </div>
 </template>
 
 <script>
 export default {
-  mixins: [VueMessenger],
   props: {
-    value: String
+    value: {
+      type: String,
+      on: {
+        change(value) {
+          if (value === 'hide') {
+            this.localVisible = false
+          }
+        }
+      }
+    },
+    visible: {
+      type: Boolean,
+      sync: true
+    }
   }
 }
 </script>
