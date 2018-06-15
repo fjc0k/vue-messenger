@@ -193,8 +193,11 @@ export default {
     count: [Number, String]
   },
   watch: {
-    count(newCount, oldCount) {
-      console.log(newCount, oldCount)
+    count: {
+      immediate: true,
+      handler(newCount, oldCount) {
+        console.log(newCount, oldCount)
+      }
     }
   }
 }
@@ -219,11 +222,29 @@ export default {
 
 ### Two-way data binding props
 
-#### Example
+To apply two-way data bindings on a prop, add `sync: true` to its descriptor. Then, you can use `this.local${PropName} = newValue` or `this.send${PropName}(newValue)` to send new value to Parent component.
 
-##### 😑 before
+#### 😑 before
 
 ```html
+<!-- // Parent.vue -->
+<template>
+  <Child v-model="value" :visible.sync="visible" />
+</template>
+
+<script>
+import Child from './Child.vue'
+
+export default {
+  components: { Child },
+  data: () => ({
+    value: String,
+    visible: Boolean
+  })
+}
+</script>
+
+<!-- // Child.vue -->
 <template>
   <div v-show="curVisible">
     <input v-model="curValue" />
@@ -243,7 +264,7 @@ export default {
       },
       set(newValue) {
         if (newValue === 'hide') {
-          this.curVisible = true
+          this.curVisible = false
         }
         this.$emit('input', newValue)
       }
@@ -261,9 +282,27 @@ export default {
 </script>
 ```
   
-##### 😀 after
+#### 😀 after
 
 ```html
+<!-- // Parent.vue -->
+<template>
+  <Child v-model="value" :visible.sync="visible" />
+</template>
+
+<script>
+import Child from './Child.vue'
+
+export default {
+  components: { Child },
+  data: () => ({
+    value: String,
+    visible: Boolean
+  })
+}
+</script>
+
+<!-- // Child.vue -->
 <template>
   <div v-show="localVisible">
     <input v-model="localValue" />
