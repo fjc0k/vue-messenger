@@ -38,13 +38,39 @@ npm i vue-messenger --save
 
 Available as global `VueMessenger`.
 
+Install the mixin globally or locally:
+
 ## Usage
+
+### Install mixin
+
+#### Globally
+
+```js
+// main.js
+import Vue from 'vue'
+import Messenger from 'vue-messenger'
+
+Vue.mixin(Messenger)
+```
+
+#### Locally
+
+```js
+// Component.vue
+import Messenger from 'vue-messenger'
+
+export default {
+  mixins: [Messenger],
+  // ...
+}
+```
 
 ### Transform props
 
 #### Example
 
-##### before 😑
+##### 😑 before
 
 ```html
 <template>
@@ -65,7 +91,7 @@ export default {
 </script>
 ```
 
-##### after 😀
+##### 😀 after
 
 ```html
 <template>
@@ -74,7 +100,6 @@ export default {
 
 <script>
 export default {
-  mixins: [VueMessenger],
   props: {
     count: {
       type: [Number, String],
@@ -89,147 +114,144 @@ export default {
 
 #### Example
 
-- before
+##### 😑 before
 
-    ```js
-    export default {
-      props: {
-        size: {
-          type: String,
-          default: 'small',
-          validator: value => ['small', 'large'].indexOf(value) >= 0
-        }
-      }
+```js
+export default {
+  props: {
+    size: {
+      type: String,
+      default: 'small',
+      validator: value => ['small', 'large'].indexOf(value) >= 0
     }
-    ```
+  }
+}
+```
 
-- after
+##### 😀 after
 
-    ```js
-    export default {
-      mixins: [VueMessenger],
-      props: {
-        size: {
-          type: String,
-          enum: ['small', 'large']
-        }
-      }
+```js
+export default {
+  props: {
+    size: {
+      type: String,
+      enum: ['small', 'large']
     }
-    ```
+  }
+}
+```
 
 ### Numeric-type props
 
 #### Example
 
-- before
+##### 😑 before
 
-    ```js
-    export default {
-      props: {
-        count: {
-          type: [Number, String],
-          default: 0,
-          validator: value => !isNaN(value - parseFloat(value))
-          }
-        }
+```js
+export default {
+  props: {
+    count: {
+      type: [Number, String],
+      default: 0,
+      validator: value => !isNaN(value - parseFloat(value))
       }
     }
-    ```
+  }
+}
+```
 
-- after
+##### 😀 after
 
-    ```js
-    export default {
-      mixins: [VueMessenger],
-      props: {
-        count: {
-          numeric: true,
-          default: 0
-        }
-      }
+```js
+export default {
+  props: {
+    count: {
+      numeric: true,
+      default: 0
     }
-    ```
+  }
+}
+```
 
 ### Listen for receiving props
 
 #### Example
 
-- before
+##### 😑 before
 
-    ```js
-    export default {
-      props: {
-        count: [Number, String]
-      },
-      watch: {
-        count(newCount, oldCount) {
+```js
+export default {
+  props: {
+    count: [Number, String]
+  },
+  watch: {
+    count(newCount, oldCount) {
+      console.log(newCount, oldCount)
+    }
+  }
+}
+```
+
+##### 😀 after
+
+```js
+export default {
+  props: {
+    count: {
+      type: [Number, String],
+      on: {
+        receive(newCount, oldCount) {
           console.log(newCount, oldCount)
         }
       }
     }
-    ```
-
-- after
-
-    ```js
-    export default {
-      mixins: [VueMessenger],
-      props: {
-        count: {
-          type: [Number, String],
-          on: {
-            receive(newCount, oldCount) {
-              console.log(newCount, oldCount)
-            }
-          }
-        }
-      }
-    }
-    ```
+  }
+}
+```
 
 ### Two-way data binding props
 
 #### Example
 
-- before
+##### 😑 before
 
-    ```html
-    <template>
-      <input v-model="curValue" />
-    </template>
+```html
+<template>
+  <input v-model="curValue" />
+</template>
 
-    <script>
-    export default {
-      props: {
-        value: String
+<script>
+export default {
+  props: {
+    value: String
+  },
+  computed: {
+    curValue: {
+      get() {
+        return this.value
       },
-      computed: {
-        curValue: {
-          get() {
-            return this.value
-          },
-          set(newValue) {
-            this.$emit('input', newValue)
-          }
-        }
+      set(newValue) {
+        this.$emit('input', newValue)
       }
     }
-    </script>
-    ```
+  }
+}
+</script>
+```
   
-- after
+##### 😀 after
 
-    ```html
-    <template>
-      <input v-model="localValue" />
-    </template>
+```html
+<template>
+  <input v-model="localValue" />
+</template>
 
-    <script>
-    export default {
-      mixins: [VueMessenger],
-      props: {
-        value: String
-      }
-    }
-    </script>
-    ```
+<script>
+export default {
+  mixins: [VueMessenger],
+  props: {
+    value: String
+  }
+}
+</script>
+```
