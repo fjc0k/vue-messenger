@@ -224,6 +224,8 @@ export default {
 
 To apply two-way data bindings on a prop, add `sync: true` to its descriptor. Then, you can use `this.local${PropName} = newValue` or `this.send${PropName}(newValue)` to send new value to Parent component.
 
+> If the prop is model prop, it's no need to add `sync: true` to its descriptor.
+
 #### 😑 before
 
 ```html
