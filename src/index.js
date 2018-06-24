@@ -19,7 +19,7 @@ export default {
 
     const model = options.model || defaultModel
 
-    const props = options.props
+    const props = options.props || {}
 
     for (const prop of Object.keys(props)) {
       const descriptor = props[prop]
