@@ -1,5 +1,5 @@
 /*!
- * vue-messenger v2.3.2
+ * vue-messenger v2.3.3
  * (c) 2018-present fjc0k <fjc0kb@gmail.com> (https://github.com/fjc0k)
  * Released under the MIT License.
  */
@@ -37,7 +37,7 @@ var index = {
     if (!options.methods) options.methods = {};
     if (!options.watch) options.watch = {};
     var model = options.model || defaultModel;
-    var props = options.props;
+    var props = options.props || {};
 
     var _arr = Object.keys(props);
 

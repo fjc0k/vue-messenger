@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.3.3"></a>
+## [2.3.3](https://github.com/fjc0k/vue-messenger/compare/v2.3.2...v2.3.3) (2018-06-24)
+
+
+### Bug Fixes
+
+* normalize options.props (close: [#2](https://github.com/fjc0k/vue-messenger/issues/2)) ([3810aa7](https://github.com/fjc0k/vue-messenger/commit/3810aa7))
+
+
+
 <a name="2.3.2"></a>
 ## [2.3.2](https://github.com/fjc0k/vue-messenger/compare/v2.3.1...v2.3.2) (2018-06-15)
 
